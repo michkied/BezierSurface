@@ -104,6 +104,8 @@ namespace BezierSurface
             double d2 = d * d;
             double d3 = d2 * d;
 
+            // TODO: use vectors
+
             double A0X = start.X;
             double A0Y = start.Y;
             double A0Z = start.Z;
@@ -130,6 +132,8 @@ namespace BezierSurface
             double prevP2Y = 6 * A3Y * d3 + 2 * A2Y * d2;
             double prevP2Z = 6 * A3Z * d3 + 2 * A2Z * d2;
 
+            // u = 0
+            // v = arg
             outList.Add(new Vector3((float)A0X, (float)A0Y, (float)A0Z));
 
             for (int step = 1; step < numOfPoints; step++)
@@ -146,6 +150,7 @@ namespace BezierSurface
                 prevP2Y = prevP2Y + 6 * A3Y * d3;
                 prevP2Z = prevP2Z + 6 * A3Z * d3;
 
+                // u += d
                 outList.Add(new Vector3((float)prevP0X, (float)prevP0Y, (float)prevP0Z));
             }
         }
