@@ -41,7 +41,6 @@
             mainPictureBox.Size = new Size(500, 501);
             mainPictureBox.TabIndex = 0;
             mainPictureBox.TabStop = false;
-            mainPictureBox.Paint += mainPictureBox_Paint;
             // 
             // PropertiesBox
             // 
