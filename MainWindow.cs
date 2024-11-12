@@ -12,19 +12,17 @@ namespace BezierSurface
         private List<Triangle> _mesh = new();
         private Bitmap? _bmp;
         private List<Vector3> controlPoints = new();
-        private List<Vertex> vertices = new();
 
         private double alpha = 45 / Math.PI * .5;
         private double beta = 7 / Math.PI * .5;
 
-        private int precision = 50;
+        private int precision = 10;
 
         public MainWindow()
         {
             InitializeComponent();
             LoadData();
             GenerateVerticies();
-            RotateVerticies();
             DrawBitmap();
         }
 
@@ -76,9 +74,26 @@ namespace BezierSurface
                 GenerateCurve(start, control1, control2, end, surfacePoints);
             }
 
+            List<Vertex> vertices = new();
             foreach (var point in surfacePoints)
             {
                 vertices.Add(new Vertex { P = point });
+            }
+
+            RotateVerticies(vertices);
+
+            for (int i = 0; i < precision - 1; i++)
+            {
+                for (int j = 0; j < precision - 1; j++)
+                {
+                    int p1 = i * precision + j;
+                    int p2 = i * precision + j + 1;
+                    int p3 = (i + 1) * precision + j;
+                    int p4 = (i + 1) * precision + j + 1;
+
+                    _mesh.Add(new Triangle(vertices[p1], vertices[p2], vertices[p3]));
+                    _mesh.Add(new Triangle(vertices[p2], vertices[p4], vertices[p3]));
+                }
             }
         }
 
@@ -135,7 +150,7 @@ namespace BezierSurface
             }
         }
 
-        private void RotateVerticies()
+        private void RotateVerticies(List<Vertex> vertices)
         {
             Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)alpha);
             Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)beta);
@@ -156,9 +171,11 @@ namespace BezierSurface
 
             g.Clear(Color.White);
 
-            foreach (var vertex in vertices)
+            foreach (var triangle in _mesh)
             {
-                g.FillRectangle(Brushes.Black, vertex.P.X, vertex.P.Y, 2, 2);
+                g.DrawLine(Pens.Black, triangle.v1.P.X, triangle.v1.P.Y, triangle.v2.P.X, triangle.v2.P.Y);
+                g.DrawLine(Pens.Black, triangle.v2.P.X, triangle.v2.P.Y, triangle.v3.P.X, triangle.v3.P.Y);
+                g.DrawLine(Pens.Black, triangle.v3.P.X, triangle.v3.P.Y, triangle.v1.P.X, triangle.v1.P.Y);
             }
 
 
