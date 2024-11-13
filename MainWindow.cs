@@ -16,11 +16,13 @@ namespace BezierSurface
         private double alpha = 0 / Math.PI * .5;
         private double beta = 0 / Math.PI * .5;
 
-        private int precision = 5;
+        private int precision;
 
         public MainWindow()
         {
             InitializeComponent();
+            precision = precisionSlider.Value;
+
             LoadData();
             GenerateVerticies();
             DrawBitmap();
@@ -131,7 +133,7 @@ namespace BezierSurface
 
         private void GenerateCurve(Vector3 start, Vector3 control1, Vector3 control2, Vector3 end, List<Vector3>? points, List<Vector3>? tangents = null)
         {
-            int numOfPoints = precision;
+            int numOfPoints = precision - 1;
             float d = 1.0f / (float)numOfPoints;
             float d2 = d * d;
             float d3 = d2 * d;
@@ -153,7 +155,7 @@ namespace BezierSurface
             points?.Add(nextP0);
             tangents?.Add(Vector3.Normalize(nextPt0));
 
-            for (int step = 1; step < numOfPoints; step++)
+            for (int step = 0; step < numOfPoints; step++)
             {
                 nextP0 += nextP1;
                 nextP1 += nextP2;
