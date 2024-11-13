@@ -67,6 +67,7 @@
             // betaSlider
             // 
             betaSlider.Location = new Point(6, 185);
+            betaSlider.Maximum = 100;
             betaSlider.Name = "betaSlider";
             betaSlider.Size = new Size(296, 45);
             betaSlider.TabIndex = 4;
@@ -75,8 +76,8 @@
             // alphaSlider
             // 
             alphaSlider.Location = new Point(6, 105);
-            alphaSlider.Maximum = 45;
-            alphaSlider.Minimum = -45;
+            alphaSlider.Maximum = 90;
+            alphaSlider.Minimum = -90;
             alphaSlider.Name = "alphaSlider";
             alphaSlider.Size = new Size(296, 45);
             alphaSlider.TabIndex = 3;

@@ -10,6 +10,7 @@ namespace BezierSurface
     public partial class MainWindow : Form
     {
         private List<Triangle> _mesh = new();
+        private List<Vertex> _vertices = new();
         private Bitmap? _bmp;
         private List<Vector3> controlPoints = new();
 
@@ -100,10 +101,10 @@ namespace BezierSurface
                 );
             }
 
-            List<Vertex> vertices = new();
+            _vertices.Clear();
             for (int i = 0; i < surfacePoints.Count; i++)
             {
-                vertices.Add(
+                _vertices.Add(
                     new Vertex
                     {
                         P = surfacePoints[i],
@@ -114,8 +115,9 @@ namespace BezierSurface
                 );
             }
 
-            RotateVerticies(vertices);
+            RotateVerticies();
 
+            _mesh.Clear();
             for (int i = 0; i < precision - 1; i++)
             {
                 for (int j = 0; j < precision - 1; j++)
@@ -125,8 +127,8 @@ namespace BezierSurface
                     int p3 = (i + 1) * precision + j;
                     int p4 = (i + 1) * precision + j + 1;
 
-                    _mesh.Add(new Triangle(vertices[p1], vertices[p2], vertices[p3]));
-                    _mesh.Add(new Triangle(vertices[p2], vertices[p4], vertices[p3]));
+                    _mesh.Add(new Triangle(_vertices[p1], _vertices[p2], _vertices[p3]));
+                    _mesh.Add(new Triangle(_vertices[p2], _vertices[p4], _vertices[p3]));
                 }
             }
         }
@@ -170,12 +172,12 @@ namespace BezierSurface
             }
         }
 
-        private void RotateVerticies(List<Vertex> vertices)
+        private void RotateVerticies()
         {
             Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)alpha);
             Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)beta);
 
-            foreach (var vertex in vertices)
+            foreach (var vertex in _vertices)
             {
                 vertex.P_rotated = Vector3.Transform(Vector3.Transform(vertex.P, rotMatrixZ), rotMatrixX);
                 vertex.Pu_rotated = Vector3.Transform(Vector3.Transform(vertex.Pu, rotMatrixZ), rotMatrixX);
@@ -208,24 +210,21 @@ namespace BezierSurface
         private void precisionSlider_Scroll(object sender, EventArgs e)
         {
             precision = precisionSlider.Value;
-            _mesh.Clear();
             GenerateVerticies();
             DrawBitmap();
         }
 
         private void alphaSlider_Scroll(object sender, EventArgs e)
         {
-            alpha = alphaSlider.Value / Math.PI * .5;
-            _mesh.Clear();
-            GenerateVerticies();
+            alpha = alphaSlider.Value / Math.PI * .5 / 2;
+            RotateVerticies();
             DrawBitmap();
         }
 
         private void betaSlider_Scroll(object sender, EventArgs e)
         {
-            beta = betaSlider.Value / Math.PI * .5;
-            _mesh.Clear();
-            GenerateVerticies();
+            beta = betaSlider.Value / Math.PI * .5 / 10;
+            RotateVerticies();
             DrawBitmap();
         }
     }
