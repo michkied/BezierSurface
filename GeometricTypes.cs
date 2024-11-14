@@ -62,6 +62,54 @@ namespace BezierSurface
         }
 
         public int yMin => (int)Math.Round(vertices.Min(v => v.P_rotated.Y));
+
+        public Color GetColor(int x, int y)
+        {
+            Vector2 p = new(x,y);
+            Vector2 v1 = new(vertices[0].P.X, vertices[0].P.Y);
+            Vector2 v2 = new(vertices[1].P.X, vertices[1].P.Y);
+            Vector2 v3 = new(vertices[2].P.X, vertices[2].P.Y);
+
+            Vector3 barCoords = new();
+            float denom = (v2.Y - v3.Y) * (v1.X - v3.X) + (v3.X - v2.X) * (v1.Y - v3.Y);
+            barCoords.X = ((v2.Y - v3.Y) * (p.X - v3.X) + (v3.X - v2.X) * (p.Y - v3.Y)) / denom;
+            barCoords.Y = ((v3.Y - v1.Y) * (p.X - v3.X) + (v1.X - v3.X) * (p.Y - v3.Y)) / denom;
+            barCoords.Z = 1 - barCoords.X - barCoords.Y;
+
+            Vector3 normal = new(
+                vertices[0].N.X * barCoords.X + vertices[1].N.X * barCoords.Y + vertices[2].N.X * barCoords.Z,
+                vertices[0].N.Y * barCoords.X + vertices[1].N.Y * barCoords.Y + vertices[2].N.Y * barCoords.Z,
+                vertices[0].N.Z * barCoords.X + vertices[1].N.Z * barCoords.Y + vertices[2].N.Z * barCoords.Z
+                );
+            normal = Vector3.Normalize(normal);
+
+            float z = vertices[0].P.Z * barCoords.X + vertices[1].P.Z * barCoords.Y + vertices[2].P.Z * barCoords.Z;
+
+            Vector3 lightSource = new(0, 0, 100);
+            Vector3 lightVector = Vector3.Normalize(lightSource - new Vector3(x, y, z));
+            Vector3 lightColor = new(1, 1, 1);
+
+            float kd = 1f;
+            float ks = 0.5f;
+            float m = 10;
+
+            Vector3 objColor = new(1, 0, 0);
+
+            Vector3 V = new(0, 0, 1);
+            Vector3 R = Vector3.Normalize(2 * Vector3.Dot(lightVector, normal) * normal - lightVector);
+
+            float cosNL = Math.Max(Vector3.Dot(normal, lightVector), 0);
+            float cosVR = Math.Max(Vector3.Dot(V, R), 0);
+
+            Vector3 color = lightColor * objColor * (kd * cosNL + ks * (float)Math.Pow(cosVR, m));
+
+
+            return Color.FromArgb(255,
+                (int)(Math.Clamp(color.X, 0, 1) * 255),
+                (int)(Math.Clamp(color.Y, 0, 1) * 255),
+                (int)(Math.Clamp(color.Z, 0, 1) * 255)
+                );
+        }
     }
 
     public class Vertex

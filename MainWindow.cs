@@ -112,7 +112,7 @@ namespace BezierSurface
                         P = surfacePoints[i],
                         Pu = tangentsU[i],
                         Pv = tangentsV[i],
-                        N = Vector3.Normalize(Vector3.Cross(tangentsU[i], tangentsV[i])),
+                        N = Vector3.Normalize(Vector3.Cross(tangentsV[i], tangentsU[i])),
                     }
                 );
             }
@@ -195,9 +195,6 @@ namespace BezierSurface
             int centerY = bmp.Height / 2;
             Graphics g = Graphics.FromImage(bmp);
 
-            //g.ScaleTransform(1.0f, -1.0f);
-            //g.TranslateTransform(mainPictureBox.Width / 2, -mainPictureBox.Height / 2);
-
             g.Clear(Color.White);
 
             foreach (var triangle in _mesh)
@@ -229,12 +226,13 @@ namespace BezierSurface
 
                         for (int k = x1; k <= x2; k++)
                         {
-                            bmp.SetPixel(k + centerX, i + triangle.yMin + centerY, Color.Black);
+                            bmp.SetPixel(
+                                k + centerX,
+                                i + triangle.yMin + centerY,
+                                triangle.GetColor(k, i + triangle.yMin)
+                                );
                         }
-
-                        //g.DrawLine(Pens.Black, x1, i + triangle.yMin, x2, i + triangle.yMin);
                     }
-                    
 
                     List<Edge> toRemove = new();
                     foreach (var e in AET)
@@ -253,14 +251,10 @@ namespace BezierSurface
                     }
                 }
 
-                foreach (var e in triangle.edges)
-                {
-                    g.DrawLine(Pens.Red, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
-                }
-
-                //g.DrawLine(Pens.Black, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y);
-                //g.DrawLine(Pens.Black, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y);
-                //g.DrawLine(Pens.Black, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y);
+                //foreach (var e in triangle.edges)
+                //{
+                //    g.DrawLine(Pens.Red, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
+                //}
             }
 
 
