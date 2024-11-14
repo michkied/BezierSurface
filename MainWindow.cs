@@ -11,18 +11,20 @@ namespace BezierSurface
     {
         private List<Triangle> _mesh = new();
         private List<Vertex> _vertices = new();
-        private Bitmap? _bmp;
+        //private Bitmap? _bmp;
         private List<Vector3> controlPoints = new();
 
-        private double alpha = 0 / Math.PI * .5;
+        private double alpha = 39 / Math.PI * .5; //todo adjust to slider scale
         private double beta = 0 / Math.PI * .5;
 
-        private int precision;
+        private int precision = 3;
 
         public MainWindow()
         {
             InitializeComponent();
-            precision = precisionSlider.Value;
+            precisionSlider.Value = precision;
+            alphaSlider.Value = (int)(alpha * Math.PI * 2 * 2);
+            betaSlider.Value = (int)(beta * Math.PI * 2 * 10);
 
             LoadData();
             GenerateVerticies();
@@ -188,8 +190,10 @@ namespace BezierSurface
 
         private void DrawBitmap()
         {
-            Bitmap _bmp = new(mainPictureBox.Width, mainPictureBox.Height);
-            Graphics g = Graphics.FromImage(_bmp);
+            Bitmap bmp = new(mainPictureBox.Width, mainPictureBox.Height);
+            int centerX = bmp.Width / 2;
+            int centerY = bmp.Height / 2;
+            Graphics g = Graphics.FromImage(bmp);
 
             g.ScaleTransform(1.0f, -1.0f);
             g.TranslateTransform(mainPictureBox.Width / 2, -mainPictureBox.Height / 2);
@@ -198,13 +202,68 @@ namespace BezierSurface
 
             foreach (var triangle in _mesh)
             {
-                g.DrawLine(Pens.Black, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y);
-                g.DrawLine(Pens.Black, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y);
-                g.DrawLine(Pens.Black, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y);
+                List<Edge>[] ET = triangle.ET;
+                List<Edge> AET = new List<Edge>();
+
+                foreach (var e in triangle.edges)
+                {
+                    e.xMin = e.v1.P_rotated.Y < e.v2.P_rotated.Y ? e.v1.P_rotated.X : e.v2.P_rotated.X;
+                }
+
+                for (int i = 0; i < triangle.ySize + 1; i++)
+                {
+                    if (ET[i] != null)
+                    {
+                        AET.AddRange(ET[i]);
+                        AET = AET.OrderBy(e => e.xMin).ToList();
+                    }
+
+                    if (AET.Count != 0)
+                    {
+                        int x2, x1 = (int)Math.Round(AET[0].xMin);
+                        if (AET.Count > 1)
+                            x2 = (int)Math.Round(AET[1].xMin);
+                        else
+                            x2 = AET[0].xMax;
+
+                        //for (int k = x1; k < x2; k++)
+                        //{
+                        //    bmp.SetPixel(k + centerX, i + (int)triangle.yMin + centerY, Color.Black);
+                        //}
+
+                        g.DrawLine(Pens.Black, x1, i + triangle.yMin, x2, i + triangle.yMin);
+                    }
+                    
+
+                    List<Edge> toRemove = new();
+                    foreach (var e in AET)
+                    {
+                        if (e.yMax <= i + 1 + triangle.yMin) 
+                        {
+                            toRemove.Add(e);
+                            continue;
+                        }
+                        e.xMin += e.slope;
+                    }
+
+                    foreach (var e in toRemove)
+                    {
+                        AET.Remove(e);
+                    }
+                }
+
+                //foreach (var e in triangle.edges)
+                //{
+                //    g.DrawLine(Pens.Red, e.v1.P_rotated.X, e.v1.P_rotated.Y, e.v2.P_rotated.X, e.v2.P_rotated.Y);
+                //}
+
+                //g.DrawLine(Pens.Black, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y);
+                //g.DrawLine(Pens.Black, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y);
+                //g.DrawLine(Pens.Black, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y);
             }
 
 
-            mainPictureBox.Image = _bmp;
+            mainPictureBox.Image = bmp;
         }
 
         private void precisionSlider_Scroll(object sender, EventArgs e)
@@ -217,6 +276,7 @@ namespace BezierSurface
         private void alphaSlider_Scroll(object sender, EventArgs e)
         {
             alpha = alphaSlider.Value / Math.PI * .5 / 2;
+            //alpha = 79 / Math.PI * .5 / 2;
             RotateVerticies();
             DrawBitmap();
         }
