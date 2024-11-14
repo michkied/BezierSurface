@@ -195,8 +195,8 @@ namespace BezierSurface
             int centerY = bmp.Height / 2;
             Graphics g = Graphics.FromImage(bmp);
 
-            g.ScaleTransform(1.0f, -1.0f);
-            g.TranslateTransform(mainPictureBox.Width / 2, -mainPictureBox.Height / 2);
+            //g.ScaleTransform(1.0f, -1.0f);
+            //g.TranslateTransform(mainPictureBox.Width / 2, -mainPictureBox.Height / 2);
 
             g.Clear(Color.White);
 
@@ -215,8 +215,9 @@ namespace BezierSurface
                     if (ET[i] != null)
                     {
                         AET.AddRange(ET[i]);
-                        AET = AET.OrderBy(e => e.xMin).ToList();
                     }
+
+                    AET = AET.OrderBy(e => e.xMin).ToList();
 
                     if (AET.Count != 0)
                     {
@@ -226,12 +227,12 @@ namespace BezierSurface
                         else
                             x2 = AET[0].xMax;
 
-                        //for (int k = x1; k < x2; k++)
-                        //{
-                        //    bmp.SetPixel(k + centerX, i + (int)triangle.yMin + centerY, Color.Black);
-                        //}
+                        for (int k = x1; k <= x2; k++)
+                        {
+                            bmp.SetPixel(k + centerX, i + triangle.yMin + centerY, Color.Black);
+                        }
 
-                        g.DrawLine(Pens.Black, x1, i + triangle.yMin, x2, i + triangle.yMin);
+                        //g.DrawLine(Pens.Black, x1, i + triangle.yMin, x2, i + triangle.yMin);
                     }
                     
 
@@ -252,10 +253,10 @@ namespace BezierSurface
                     }
                 }
 
-                //foreach (var e in triangle.edges)
-                //{
-                //    g.DrawLine(Pens.Red, e.v1.P_rotated.X, e.v1.P_rotated.Y, e.v2.P_rotated.X, e.v2.P_rotated.Y);
-                //}
+                foreach (var e in triangle.edges)
+                {
+                    g.DrawLine(Pens.Red, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
+                }
 
                 //g.DrawLine(Pens.Black, triangle.v1.P_rotated.X, triangle.v1.P_rotated.Y, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y);
                 //g.DrawLine(Pens.Black, triangle.v2.P_rotated.X, triangle.v2.P_rotated.Y, triangle.v3.P_rotated.X, triangle.v3.P_rotated.Y);
