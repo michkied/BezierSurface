@@ -82,7 +82,6 @@ namespace BezierSurface
                 vertices[0].N.Z * barCoords.X + vertices[1].N.Z * barCoords.Y + vertices[2].N.Z * barCoords.Z
                 );
             normal = Vector3.Normalize(normal);
-
             float z = vertices[0].P.Z * barCoords.X + vertices[1].P.Z * barCoords.Y + vertices[2].P.Z * barCoords.Z;
 
             Vector3 lightSource = new(0, 0, 100);
@@ -102,8 +101,6 @@ namespace BezierSurface
             float cosVR = Math.Max(Vector3.Dot(V, R), 0);
 
             Vector3 color = lightColor * objColor * (kd * cosNL + ks * (float)Math.Pow(cosVR, m));
-
-
             return Color.FromArgb(255,
                 (int)(Math.Clamp(color.X, 0, 1) * 255),
                 (int)(Math.Clamp(color.Y, 0, 1) * 255),

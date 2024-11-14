@@ -35,10 +35,10 @@ namespace BezierSurface
         {
             controlPoints = new List<Vector3>
             {
-                new Vector3(-120, 120, 30),
+                new Vector3(-120, 120, -30),
                 new Vector3(-40, 120, 0),
                 new Vector3(40, 120, 0),
-                new Vector3(120, 120, 0),
+                new Vector3(120, 120, -30),
                 new Vector3(-120, 40, 0),
                 new Vector3(-40, 40, 0),
                 new Vector3(40, 40, 0),
@@ -47,11 +47,34 @@ namespace BezierSurface
                 new Vector3(-40, -40, 0),
                 new Vector3(40, -40, 0),
                 new Vector3(120, -40, 0),
-                new Vector3(-120, -120, 0),
+                new Vector3(-120, -120, -30),
                 new Vector3(-40, -120, 0),
                 new Vector3(40, -120, 0),
-                new Vector3(120, -120, 0)
+                new Vector3(120, -120, -30)
             };
+
+            //controlPoints = new List<Vector3>
+            //{
+            //    new Vector3(-120, 120, 50),
+            //    new Vector3(-40, 120, -20),
+            //    new Vector3(40, 120, 20),
+            //    new Vector3(120, 120, -30),
+
+            //    new Vector3(-120, 40, -10),
+            //    new Vector3(-40, 40, 40),
+            //    new Vector3(40, 40, -40),
+            //    new Vector3(120, 40, 30),
+
+            //    new Vector3(-120, -40, 30),
+            //    new Vector3(-40, -40, -30),
+            //    new Vector3(40, -40, 40),
+            //    new Vector3(120, -40, -10),
+
+            //    new Vector3(-120, -120, -20),
+            //    new Vector3(-40, -120, 30),
+            //    new Vector3(40, -120, -20),
+            //    new Vector3(120, -120, 50)
+            //};
         }
 
         private void GenerateVerticies()
