@@ -91,9 +91,9 @@ namespace BezierSurface
             Vector3 lightVector = Vector3.Normalize(lightSource - new Vector3(x, y, z));
             Vector3 lightColor = new(1, 1, 1);
 
-            float kd = 1f;
-            float ks = 0.5f;
-            float m = 10;
+            float kd = MainWindow.kd;
+            float ks = MainWindow.ks;
+            float m = MainWindow.m;
 
             Vector3 objColor = new(1, 0, 0);
 

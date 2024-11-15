@@ -14,17 +14,29 @@ namespace BezierSurface
         //private Bitmap? _bmp;
         private List<Vector3> controlPoints = new();
 
-        public static double alpha = 10 / Math.PI * .5; //todo adjust to slider scale
-        public static double beta = 3 / Math.PI * .5;
+        public static double alpha = 10.0 / 180 * Math.PI;
+        public static double beta = 60.0 / 180 * Math.PI;
 
-        private int precision = 3;
+        public static float kd = 0.5f;
+        public static float ks = 0.5f;
+        public static float m = 10;
+
+        public static bool drawMesh = false;
+
+        private int precision = 10;
 
         public MainWindow()
         {
             InitializeComponent();
             precisionSlider.Value = precision;
-            alphaSlider.Value = (int)(alpha * Math.PI * 2 * 2);
-            betaSlider.Value = (int)(beta * Math.PI * 2 * 10);
+            alphaSlider.Value = (int)(alpha * 180 / Math.PI);
+            betaSlider.Value = (int)(beta * 180 / Math.PI * 1.5);
+
+            kdSlider.Value = (int)(kd * 100);
+            ksSlider.Value = (int)(ks * 100);
+            mSlider.Value = (int)m;
+
+            showMeshBox.Checked = drawMesh;
 
             LoadData();
             GenerateVerticies();
@@ -113,7 +125,7 @@ namespace BezierSurface
                     tempControlPointsX[i + 2 * precision],
                     tempControlPointsX[i + 3 * precision],
                     surfacePoints,
-                    tangentsV
+                    tangentsU
                 );
 
                 GenerateCurve(
@@ -122,7 +134,7 @@ namespace BezierSurface
                     tempControlPointsY[i + 2 * precision],
                     tempControlPointsY[i + 3 * precision],
                     null,
-                    tangentsU
+                    tangentsV
                 );
             }
 
@@ -133,12 +145,12 @@ namespace BezierSurface
                     new Vertex
                     {
                         P = surfacePoints[i],
-                        Pu = tangentsU[(i / precision) + (i % precision) * precision],
-                        Pv = tangentsV[i],
+                        Pu = tangentsU[i],
+                        Pv = tangentsV[(i / precision) + (i % precision) * precision],
                         N = Vector3.Normalize(
                             Vector3.Cross(
-                                tangentsV[i],
-                                tangentsU[(i / precision) + (i % precision) * precision]
+                                tangentsU[i],
+                                tangentsV[(i / precision) + (i % precision) * precision]
                                 )
                             ),
                     }
@@ -279,10 +291,13 @@ namespace BezierSurface
                     }
                 }
 
-                //foreach (var e in triangle.edges)
-                //{
-                //    g.DrawLine(Pens.Red, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
-                //}
+                if (drawMesh)
+                {
+                    foreach (var e in triangle.edges)
+                    {
+                        g.DrawLine(Pens.Black, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
+                    }
+                }
 
                 //foreach (var v in triangle.vertices)
                 //{
@@ -292,23 +307,6 @@ namespace BezierSurface
                 //    //g.FillEllipse(Brushes.Black, v.P_rotated.X + centerX - 2, v.P_rotated.Y + centerY - 2, 4, 4);
                 //}
             }
-
-            //foreach (var triangle in _mesh2)
-            //{
-            //    foreach (var e in triangle.edges)
-            //    {
-            //        g.DrawLine(Pens.Green, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
-            //    }
-
-            //    foreach (var v in triangle.vertices)
-            //    {
-            //        //g.DrawLine(Pens.Black, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.N_rotated.X * 30, v.P_rotated.Y + centerY + v.N_rotated.Y * 30);
-            //        g.DrawLine(Pens.Black, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pu_rotated.X * 20, v.P_rotated.Y + centerY + v.Pu_rotated.Y * 20);
-            //        g.DrawLine(Pens.Blue, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pv_rotated.X * 20, v.P_rotated.Y + centerY + v.Pv_rotated.Y * 20);
-            //        //g.FillEllipse(Brushes.Black, v.P_rotated.X + centerX - 2, v.P_rotated.Y + centerY - 2, 4, 4);
-            //    }
-            //}
-
 
             mainPictureBox.Image = bmp;
         }
@@ -322,16 +320,39 @@ namespace BezierSurface
 
         private void alphaSlider_Scroll(object sender, EventArgs e)
         {
-            alpha = alphaSlider.Value / Math.PI * .5 / 2;
-            //alpha = 79 / Math.PI * .5 / 2;
+            alpha = (double)alphaSlider.Value / 180 * Math.PI;
             RotateVerticies();
             DrawBitmap();
         }
 
         private void betaSlider_Scroll(object sender, EventArgs e)
         {
-            beta = betaSlider.Value / Math.PI * .5 / 10;
+            beta = (double)betaSlider.Value / 180 * Math.PI / 1.5;
             RotateVerticies();
+            DrawBitmap();
+        }
+
+        private void kdSlider_Scroll(object sender, EventArgs e)
+        {
+            kd = (float)kdSlider.Value / 100;
+            DrawBitmap();
+        }
+
+        private void ksSlider_Scroll(object sender, EventArgs e)
+        {
+            ks = (float)ksSlider.Value / 100;
+            DrawBitmap();
+        }
+
+        private void mSlider_Scroll(object sender, EventArgs e)
+        {
+            m = (float)mSlider.Value;
+            DrawBitmap();
+        }
+
+        private void showMeshBox_CheckedChanged(object sender, EventArgs e)
+        {
+            drawMesh = showMeshBox.Checked;
             DrawBitmap();
         }
     }
