@@ -538,6 +538,7 @@
             loadNVMButton.TabIndex = 6;
             loadNVMButton.Text = "Load";
             loadNVMButton.UseVisualStyleBackColor = true;
+            loadNVMButton.Click += loadNVMButton_Click;
             // 
             // label11
             // 
@@ -573,6 +574,7 @@
             NVMSurfaceButton.TabIndex = 1;
             NVMSurfaceButton.Text = "radioButton2";
             NVMSurfaceButton.UseVisualStyleBackColor = true;
+            NVMSurfaceButton.CheckedChanged += NVMSurfaceButton_CheckedChanged;
             // 
             // label9
             // 

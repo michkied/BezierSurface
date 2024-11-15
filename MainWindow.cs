@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Runtime.Intrinsics.X86;
 using System.Security.Policy;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace BezierSurface
 {
@@ -11,7 +12,6 @@ namespace BezierSurface
     {
         private List<Triangle> _mesh = new();
         private List<Vertex> _vertices = new();
-        //private Bitmap? _bmp;
         private List<Vector3> controlPoints = new();
 
         public static double alpha = 10.0 / 180 * Math.PI;
@@ -29,6 +29,8 @@ namespace BezierSurface
         public static Color surfaceColor = Color.Red;
 
         public static Bitmap? texture;
+        public static Bitmap? normalMap;
+        public static bool useNormalMap = false;
 
         private int precision = 10;
 
@@ -275,7 +277,7 @@ namespace BezierSurface
             int centerY = bmp.Height / 2;
             Graphics g = Graphics.FromImage(bmp);
 
-            g.Clear(Color.White);
+            g.Clear(Color.Transparent);
 
             foreach (var triangle in _mesh)
             {
@@ -432,11 +434,33 @@ namespace BezierSurface
         private void loadTextureButton_Click(object sender, EventArgs e)
         {
             openFileDialog.Reset();
+
+            string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources");
+            openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 texture = new Bitmap(openFileDialog.FileName);
                 surfColorIndicator.BackColor = Color.Transparent;
             }
+        }
+
+        private void loadNVMButton_Click(object sender, EventArgs e)
+        {
+            openFileDialog.Reset();
+
+            string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources");
+            openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                normalMap = new Bitmap(openFileDialog.FileName);
+            }
+        }
+
+        private void NVMSurfaceButton_CheckedChanged(object sender, EventArgs e)
+        {
+            useNormalMap = NVMSurfaceButton.Checked;
         }
     }
 }

@@ -82,11 +82,33 @@ namespace BezierSurface
                 vertices[0].N_rotated.Z * barCoords.X + vertices[1].N_rotated.Z * barCoords.Y + vertices[2].N_rotated.Z * barCoords.Z
                 );
             normal = Vector3.Normalize(normal);
+
             float z = vertices[0].P_rotated.Z * barCoords.X + vertices[1].P_rotated.Z * barCoords.Y + vertices[2].P_rotated.Z * barCoords.Z;
             double u = vertices[0].u * barCoords.X + vertices[1].u * barCoords.Y + vertices[2].u * barCoords.Z;
             double v = vertices[0].v * barCoords.X + vertices[1].v * barCoords.Y + vertices[2].v * barCoords.Z;
             u = Math.Clamp(u, 0, 1);
             v = Math.Clamp(v, 0, 1);
+
+            if (MainWindow.useNormalMap) 
+            {
+                Vector3 Pu = Vector3.Normalize(
+                    vertices[0].Pu_rotated * barCoords.X + vertices[1].Pu_rotated * barCoords.Y + vertices[2].Pu_rotated * barCoords.Z);
+                Vector3 Pv = Vector3.Normalize(
+                    vertices[0].Pv_rotated * barCoords.X + vertices[1].Pv_rotated * barCoords.Y + vertices[2].Pv_rotated * barCoords.Z);
+
+                Color mapColor = MainWindow.normalMap!.GetPixel(
+                    (int)(u * (MainWindow.normalMap.Width - 1)),
+                    (int)(v * (MainWindow.normalMap.Height - 1))
+                    );
+                Vector3 normalFromMap = new((float)mapColor.R / 127.5f - 1, (float)mapColor.G / 127.5f - 1, (float)mapColor.B / 127.5f - 1);
+                Matrix4x4 rotMatrix = new Matrix4x4(
+                    Pu.X, Pv.X, normal.X, 0,
+                    Pu.Y, Pv.Y, normal.Y, 0,
+                    Pu.Z, Pv.Z, normal.Z, 0,
+                    0, 0, 0, 0
+                    );
+                normal = Vector3.Normalize(Vector3.Transform(normalFromMap, rotMatrix));
+            }
 
             Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)MainWindow.alpha);
             Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)MainWindow.beta);
