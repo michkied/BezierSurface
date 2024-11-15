@@ -66,9 +66,9 @@ namespace BezierSurface
         public Color GetColor(int x, int y)
         {
             Vector2 p = new(x,y);
-            Vector2 v1 = new(vertices[0].P.X, vertices[0].P.Y);
-            Vector2 v2 = new(vertices[1].P.X, vertices[1].P.Y);
-            Vector2 v3 = new(vertices[2].P.X, vertices[2].P.Y);
+            Vector2 v1 = new(vertices[0].P_rotated.X, vertices[0].P_rotated.Y);
+            Vector2 v2 = new(vertices[1].P_rotated.X, vertices[1].P_rotated.Y);
+            Vector2 v3 = new(vertices[2].P_rotated.X, vertices[2].P_rotated.Y);
 
             Vector3 barCoords = new();
             float denom = (v2.Y - v3.Y) * (v1.X - v3.X) + (v3.X - v2.X) * (v1.Y - v3.Y);
@@ -77,14 +77,17 @@ namespace BezierSurface
             barCoords.Z = 1 - barCoords.X - barCoords.Y;
 
             Vector3 normal = new(
-                vertices[0].N.X * barCoords.X + vertices[1].N.X * barCoords.Y + vertices[2].N.X * barCoords.Z,
-                vertices[0].N.Y * barCoords.X + vertices[1].N.Y * barCoords.Y + vertices[2].N.Y * barCoords.Z,
-                vertices[0].N.Z * barCoords.X + vertices[1].N.Z * barCoords.Y + vertices[2].N.Z * barCoords.Z
+                vertices[0].N_rotated.X * barCoords.X + vertices[1].N_rotated.X * barCoords.Y + vertices[2].N_rotated.X * barCoords.Z,
+                vertices[0].N_rotated.Y * barCoords.X + vertices[1].N_rotated.Y * barCoords.Y + vertices[2].N_rotated.Y * barCoords.Z,
+                vertices[0].N_rotated.Z * barCoords.X + vertices[1].N_rotated.Z * barCoords.Y + vertices[2].N_rotated.Z * barCoords.Z
                 );
             normal = Vector3.Normalize(normal);
-            float z = vertices[0].P.Z * barCoords.X + vertices[1].P.Z * barCoords.Y + vertices[2].P.Z * barCoords.Z;
+            float z = vertices[0].P_rotated.Z * barCoords.X + vertices[1].P_rotated.Z * barCoords.Y + vertices[2].P_rotated.Z * barCoords.Z;
 
-            Vector3 lightSource = new(0, 0, 100);
+            Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)MainWindow.alpha);
+            Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)MainWindow.beta);
+
+            Vector3 lightSource = Vector3.Transform(Vector3.Transform(new(0, 0, 200), rotMatrixZ), rotMatrixX);
             Vector3 lightVector = Vector3.Normalize(lightSource - new Vector3(x, y, z));
             Vector3 lightColor = new(1, 1, 1);
 

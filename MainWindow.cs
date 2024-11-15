@@ -14,8 +14,8 @@ namespace BezierSurface
         //private Bitmap? _bmp;
         private List<Vector3> controlPoints = new();
 
-        private double alpha = 39 / Math.PI * .5; //todo adjust to slider scale
-        private double beta = 0 / Math.PI * .5;
+        public static double alpha = 10 / Math.PI * .5; //todo adjust to slider scale
+        public static double beta = 3 / Math.PI * .5;
 
         private int precision = 3;
 
@@ -62,7 +62,7 @@ namespace BezierSurface
 
             //    new Vector3(-120, 40, -10),
             //    new Vector3(-40, 40, 40),
-            //    new Vector3(40, 40, -40),
+            //    new Vector3(40, 40, -80),
             //    new Vector3(120, 40, 30),
 
             //    new Vector3(-120, -40, 30),
@@ -70,7 +70,7 @@ namespace BezierSurface
             //    new Vector3(40, -40, 40),
             //    new Vector3(120, -40, -10),
 
-            //    new Vector3(-120, -120, -20),
+            //    new Vector3(-120, -120, -80),
             //    new Vector3(-40, -120, 30),
             //    new Vector3(40, -120, -20),
             //    new Vector3(120, -120, 50)
@@ -133,9 +133,14 @@ namespace BezierSurface
                     new Vertex
                     {
                         P = surfacePoints[i],
-                        Pu = tangentsU[i],
+                        Pu = tangentsU[(i / precision) + (i % precision) * precision],
                         Pv = tangentsV[i],
-                        N = Vector3.Normalize(Vector3.Cross(tangentsV[i], tangentsU[i])),
+                        N = Vector3.Normalize(
+                            Vector3.Cross(
+                                tangentsV[i],
+                                tangentsU[(i / precision) + (i % precision) * precision]
+                                )
+                            ),
                     }
                 );
             }
@@ -260,7 +265,7 @@ namespace BezierSurface
                     List<Edge> toRemove = new();
                     foreach (var e in AET)
                     {
-                        if (e.yMax <= i + 1 + triangle.yMin) 
+                        if (e.yMax <= i + 1 + triangle.yMin)
                         {
                             toRemove.Add(e);
                             continue;
@@ -278,7 +283,31 @@ namespace BezierSurface
                 //{
                 //    g.DrawLine(Pens.Red, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
                 //}
+
+                //foreach (var v in triangle.vertices)
+                //{
+                //    g.DrawLine(Pens.Black, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.N_rotated.X * 30, v.P_rotated.Y + centerY + v.N_rotated.Y * 30);
+                //    //g.DrawLine(Pens.Green, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pu_rotated.X * 20, v.P_rotated.Y + centerY + v.Pu_rotated.Y * 20);
+                //    //g.DrawLine(Pens.Blue, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pv_rotated.X * 20, v.P_rotated.Y + centerY + v.Pv_rotated.Y * 20);
+                //    //g.FillEllipse(Brushes.Black, v.P_rotated.X + centerX - 2, v.P_rotated.Y + centerY - 2, 4, 4);
+                //}
             }
+
+            //foreach (var triangle in _mesh2)
+            //{
+            //    foreach (var e in triangle.edges)
+            //    {
+            //        g.DrawLine(Pens.Green, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
+            //    }
+
+            //    foreach (var v in triangle.vertices)
+            //    {
+            //        //g.DrawLine(Pens.Black, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.N_rotated.X * 30, v.P_rotated.Y + centerY + v.N_rotated.Y * 30);
+            //        g.DrawLine(Pens.Black, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pu_rotated.X * 20, v.P_rotated.Y + centerY + v.Pu_rotated.Y * 20);
+            //        g.DrawLine(Pens.Blue, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pv_rotated.X * 20, v.P_rotated.Y + centerY + v.Pv_rotated.Y * 20);
+            //        //g.FillEllipse(Brushes.Black, v.P_rotated.X + centerX - 2, v.P_rotated.Y + centerY - 2, 4, 4);
+            //    }
+            //}
 
 
             mainPictureBox.Image = bmp;
