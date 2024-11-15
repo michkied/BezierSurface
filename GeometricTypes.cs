@@ -83,19 +83,38 @@ namespace BezierSurface
                 );
             normal = Vector3.Normalize(normal);
             float z = vertices[0].P_rotated.Z * barCoords.X + vertices[1].P_rotated.Z * barCoords.Y + vertices[2].P_rotated.Z * barCoords.Z;
+            double u = vertices[0].u * barCoords.X + vertices[1].u * barCoords.Y + vertices[2].u * barCoords.Z;
+            double v = vertices[0].v * barCoords.X + vertices[1].v * barCoords.Y + vertices[2].v * barCoords.Z;
+            u = Math.Clamp(u, 0, 1);
+            v = Math.Clamp(v, 0, 1);
 
             Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)MainWindow.alpha);
             Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)MainWindow.beta);
 
-            Vector3 lightSource = Vector3.Transform(Vector3.Transform(new(0, 0, 200), rotMatrixZ), rotMatrixX);
+            Vector3 lightSource = Vector3.Transform(Vector3.Transform(new(0, 0, MainWindow.lightHeight), rotMatrixZ), rotMatrixX);
             Vector3 lightVector = Vector3.Normalize(lightSource - new Vector3(x, y, z));
-            Vector3 lightColor = new(1, 1, 1);
+            Vector3 lightColor = new(MainWindow.lightColor.R, MainWindow.lightColor.G, MainWindow.lightColor.B);
+            lightColor /= 255.0f;
 
             float kd = MainWindow.kd;
             float ks = MainWindow.ks;
             float m = MainWindow.m;
 
-            Vector3 objColor = new(1, 0, 0);
+
+            Vector3 objColor;
+            if (MainWindow.texture == null)
+            {
+                objColor = new(MainWindow.surfaceColor.R, MainWindow.surfaceColor.G, MainWindow.surfaceColor.B);
+            }
+            else
+            {
+                Color pixelColor = MainWindow.texture.GetPixel(
+                    (int)(u * (MainWindow.texture.Width - 1)),
+                    (int)(v * (MainWindow.texture.Height - 1))
+                    );
+                objColor = new(pixelColor.R, pixelColor.G, pixelColor.B);
+            }
+            objColor /= 255.0f;
 
             Vector3 V = new(0, 0, 1);
             Vector3 R = Vector3.Normalize(2 * Vector3.Dot(lightVector, normal) * normal - lightVector);

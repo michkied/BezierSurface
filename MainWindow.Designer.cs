@@ -42,7 +42,7 @@
             label3 = new Label();
             tableLayoutPanel7 = new TableLayoutPanel();
             meshColorButton = new Button();
-            pictureBox1 = new PictureBox();
+            meshColorIndicator = new PictureBox();
             showMeshBox = new CheckBox();
             label12 = new Label();
             SurfaceBox = new GroupBox();
@@ -57,8 +57,8 @@
             kdSlider = new TrackBar();
             tableLayoutPanel4 = new TableLayoutPanel();
             loadTextureButton = new Button();
-            pickColorButton = new Button();
-            colorIndicator = new PictureBox();
+            surfaceColorButton = new Button();
+            surfColorIndicator = new PictureBox();
             tableLayoutPanel5 = new TableLayoutPanel();
             loadNVMButton = new Button();
             label11 = new Label();
@@ -70,13 +70,14 @@
             label14 = new Label();
             label13 = new Label();
             tableLayoutPanel8 = new TableLayoutPanel();
-            button1 = new Button();
-            pictureBox2 = new PictureBox();
+            lightColorButton = new Button();
+            lightColorIndicator = new PictureBox();
             tableLayoutPanel9 = new TableLayoutPanel();
             lightHeightSlider = new TrackBar();
             label15 = new Label();
             lightMoveBox = new CheckBox();
-            colorDialog1 = new ColorDialog();
+            colorDialog = new ColorDialog();
+            openFileDialog = new OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)mainPictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
             splitContainer2.Panel1.SuspendLayout();
@@ -89,19 +90,19 @@
             ((System.ComponentModel.ISupportInitialize)alphaSlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)betaSlider).BeginInit();
             tableLayoutPanel7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)meshColorIndicator).BeginInit();
             SurfaceBox.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mSlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ksSlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)kdSlider).BeginInit();
             tableLayoutPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)colorIndicator).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)surfColorIndicator).BeginInit();
             tableLayoutPanel5.SuspendLayout();
             groupBox1.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)lightColorIndicator).BeginInit();
             tableLayoutPanel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)lightHeightSlider).BeginInit();
             SuspendLayout();
@@ -111,7 +112,7 @@
             mainPictureBox.Dock = DockStyle.Fill;
             mainPictureBox.Location = new Point(0, 0);
             mainPictureBox.Name = "mainPictureBox";
-            mainPictureBox.Size = new Size(610, 588);
+            mainPictureBox.Size = new Size(754, 596);
             mainPictureBox.TabIndex = 0;
             mainPictureBox.TabStop = false;
             // 
@@ -128,8 +129,8 @@
             // splitContainer2.Panel2
             // 
             splitContainer2.Panel2.Controls.Add(tableLayoutPanel2);
-            splitContainer2.Size = new Size(977, 588);
-            splitContainer2.SplitterDistance = 610;
+            splitContainer2.Size = new Size(1143, 596);
+            splitContainer2.SplitterDistance = 754;
             splitContainer2.TabIndex = 2;
             // 
             // tableLayoutPanel2
@@ -142,11 +143,12 @@
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(0, 0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowCount = 4;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 200F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 273F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(363, 588);
+            tableLayoutPanel2.Size = new Size(385, 596);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // ShapeBox
@@ -156,7 +158,7 @@
             ShapeBox.Dock = DockStyle.Fill;
             ShapeBox.Location = new Point(3, 3);
             ShapeBox.Name = "ShapeBox";
-            ShapeBox.Size = new Size(357, 194);
+            ShapeBox.Size = new Size(379, 194);
             ShapeBox.TabIndex = 1;
             ShapeBox.TabStop = false;
             ShapeBox.Text = "Shape";
@@ -182,7 +184,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25.0006275F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25.0006275F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 24.9981289F));
-            tableLayoutPanel1.Size = new Size(351, 172);
+            tableLayoutPanel1.Size = new Size(373, 172);
             tableLayoutPanel1.TabIndex = 5;
             // 
             // label10
@@ -204,7 +206,7 @@
             precisionSlider.Maximum = 50;
             precisionSlider.Minimum = 3;
             precisionSlider.Name = "precisionSlider";
-            precisionSlider.Size = new Size(275, 40);
+            precisionSlider.Size = new Size(297, 40);
             precisionSlider.TabIndex = 2;
             precisionSlider.Value = 4;
             precisionSlider.Scroll += precisionSlider_Scroll;
@@ -216,7 +218,7 @@
             alphaSlider.Maximum = 45;
             alphaSlider.Minimum = -45;
             alphaSlider.Name = "alphaSlider";
-            alphaSlider.Size = new Size(275, 37);
+            alphaSlider.Size = new Size(297, 37);
             alphaSlider.TabIndex = 3;
             alphaSlider.Scroll += alphaSlider_Scroll;
             // 
@@ -226,7 +228,7 @@
             betaSlider.Location = new Point(73, 89);
             betaSlider.Maximum = 90;
             betaSlider.Name = "betaSlider";
-            betaSlider.Size = new Size(275, 37);
+            betaSlider.Size = new Size(297, 37);
             betaSlider.TabIndex = 4;
             betaSlider.Scroll += betaSlider_Scroll;
             // 
@@ -271,7 +273,7 @@
             tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 45F));
             tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel7.Controls.Add(meshColorButton, 3, 0);
-            tableLayoutPanel7.Controls.Add(pictureBox1, 2, 0);
+            tableLayoutPanel7.Controls.Add(meshColorIndicator, 2, 0);
             tableLayoutPanel7.Controls.Add(showMeshBox, 0, 0);
             tableLayoutPanel7.Controls.Add(label12, 1, 0);
             tableLayoutPanel7.Dock = DockStyle.Fill;
@@ -279,7 +281,7 @@
             tableLayoutPanel7.Name = "tableLayoutPanel7";
             tableLayoutPanel7.RowCount = 1;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel7.Size = new Size(275, 37);
+            tableLayoutPanel7.Size = new Size(297, 37);
             tableLayoutPanel7.TabIndex = 9;
             // 
             // meshColorButton
@@ -287,21 +289,22 @@
             meshColorButton.Dock = DockStyle.Fill;
             meshColorButton.Location = new Point(138, 3);
             meshColorButton.Name = "meshColorButton";
-            meshColorButton.Size = new Size(134, 31);
+            meshColorButton.Size = new Size(156, 31);
             meshColorButton.TabIndex = 1;
             meshColorButton.Text = "Pick a color";
             meshColorButton.UseVisualStyleBackColor = true;
+            meshColorButton.Click += meshColorButton_Click;
             // 
-            // pictureBox1
+            // meshColorIndicator
             // 
-            pictureBox1.BackColor = Color.White;
-            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Location = new Point(93, 3);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(39, 31);
-            pictureBox1.TabIndex = 3;
-            pictureBox1.TabStop = false;
+            meshColorIndicator.BackColor = Color.White;
+            meshColorIndicator.BorderStyle = BorderStyle.FixedSingle;
+            meshColorIndicator.Dock = DockStyle.Fill;
+            meshColorIndicator.Location = new Point(93, 3);
+            meshColorIndicator.Name = "meshColorIndicator";
+            meshColorIndicator.Size = new Size(39, 31);
+            meshColorIndicator.TabIndex = 3;
+            meshColorIndicator.TabStop = false;
             // 
             // showMeshBox
             // 
@@ -332,7 +335,7 @@
             SurfaceBox.Dock = DockStyle.Fill;
             SurfaceBox.Location = new Point(3, 203);
             SurfaceBox.Name = "SurfaceBox";
-            SurfaceBox.Size = new Size(357, 267);
+            SurfaceBox.Size = new Size(379, 267);
             SurfaceBox.TabIndex = 2;
             SurfaceBox.TabStop = false;
             SurfaceBox.Text = "Surface";
@@ -361,7 +364,7 @@
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
-            tableLayoutPanel3.Size = new Size(351, 245);
+            tableLayoutPanel3.Size = new Size(373, 245);
             tableLayoutPanel3.TabIndex = 0;
             // 
             // label8
@@ -393,7 +396,7 @@
             mSlider.Margin = new Padding(3, 3, 3, 0);
             mSlider.Maximum = 100;
             mSlider.Name = "mSlider";
-            mSlider.Size = new Size(275, 42);
+            mSlider.Size = new Size(297, 42);
             mSlider.TabIndex = 17;
             mSlider.Value = 4;
             mSlider.Scroll += mSlider_Scroll;
@@ -405,7 +408,7 @@
             ksSlider.Margin = new Padding(3, 3, 3, 0);
             ksSlider.Maximum = 100;
             ksSlider.Name = "ksSlider";
-            ksSlider.Size = new Size(275, 42);
+            ksSlider.Size = new Size(297, 42);
             ksSlider.TabIndex = 16;
             ksSlider.Value = 4;
             ksSlider.Scroll += ksSlider_Scroll;
@@ -450,7 +453,7 @@
             kdSlider.Margin = new Padding(3, 3, 3, 0);
             kdSlider.Maximum = 100;
             kdSlider.Name = "kdSlider";
-            kdSlider.Size = new Size(275, 42);
+            kdSlider.Size = new Size(297, 42);
             kdSlider.TabIndex = 15;
             kdSlider.Value = 4;
             kdSlider.Scroll += kdSlider_Scroll;
@@ -463,46 +466,48 @@
             tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel4.Controls.Add(loadTextureButton, 2, 0);
-            tableLayoutPanel4.Controls.Add(pickColorButton, 1, 0);
-            tableLayoutPanel4.Controls.Add(colorIndicator, 0, 0);
+            tableLayoutPanel4.Controls.Add(surfaceColorButton, 1, 0);
+            tableLayoutPanel4.Controls.Add(surfColorIndicator, 0, 0);
             tableLayoutPanel4.Dock = DockStyle.Fill;
             tableLayoutPanel4.Location = new Point(73, 138);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel4.Size = new Size(275, 39);
+            tableLayoutPanel4.Size = new Size(297, 39);
             tableLayoutPanel4.TabIndex = 19;
             // 
             // loadTextureButton
             // 
             loadTextureButton.Dock = DockStyle.Fill;
-            loadTextureButton.Location = new Point(163, 3);
+            loadTextureButton.Location = new Point(174, 3);
             loadTextureButton.Name = "loadTextureButton";
-            loadTextureButton.Size = new Size(109, 33);
+            loadTextureButton.Size = new Size(120, 33);
             loadTextureButton.TabIndex = 1;
             loadTextureButton.Text = "Texture";
             loadTextureButton.UseVisualStyleBackColor = true;
+            loadTextureButton.Click += loadTextureButton_Click;
             // 
-            // pickColorButton
+            // surfaceColorButton
             // 
-            pickColorButton.Dock = DockStyle.Fill;
-            pickColorButton.Location = new Point(48, 3);
-            pickColorButton.Name = "pickColorButton";
-            pickColorButton.Size = new Size(109, 33);
-            pickColorButton.TabIndex = 0;
-            pickColorButton.Text = "Color";
-            pickColorButton.UseVisualStyleBackColor = true;
+            surfaceColorButton.Dock = DockStyle.Fill;
+            surfaceColorButton.Location = new Point(48, 3);
+            surfaceColorButton.Name = "surfaceColorButton";
+            surfaceColorButton.Size = new Size(120, 33);
+            surfaceColorButton.TabIndex = 0;
+            surfaceColorButton.Text = "Color";
+            surfaceColorButton.UseVisualStyleBackColor = true;
+            surfaceColorButton.Click += surfaceColorButton_Click;
             // 
-            // colorIndicator
+            // surfColorIndicator
             // 
-            colorIndicator.BackColor = Color.White;
-            colorIndicator.BorderStyle = BorderStyle.FixedSingle;
-            colorIndicator.Dock = DockStyle.Fill;
-            colorIndicator.Location = new Point(3, 3);
-            colorIndicator.Name = "colorIndicator";
-            colorIndicator.Size = new Size(39, 33);
-            colorIndicator.TabIndex = 2;
-            colorIndicator.TabStop = false;
+            surfColorIndicator.BackColor = Color.White;
+            surfColorIndicator.BorderStyle = BorderStyle.FixedSingle;
+            surfColorIndicator.Dock = DockStyle.Fill;
+            surfColorIndicator.Location = new Point(3, 3);
+            surfColorIndicator.Name = "surfColorIndicator";
+            surfColorIndicator.Size = new Size(39, 33);
+            surfColorIndicator.TabIndex = 2;
+            surfColorIndicator.TabStop = false;
             // 
             // tableLayoutPanel5
             // 
@@ -521,7 +526,7 @@
             tableLayoutPanel5.RowCount = 2;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel5.Size = new Size(275, 59);
+            tableLayoutPanel5.Size = new Size(297, 59);
             tableLayoutPanel5.TabIndex = 21;
             // 
             // loadNVMButton
@@ -529,7 +534,7 @@
             loadNVMButton.Dock = DockStyle.Fill;
             loadNVMButton.Location = new Point(142, 32);
             loadNVMButton.Name = "loadNVMButton";
-            loadNVMButton.Size = new Size(130, 24);
+            loadNVMButton.Size = new Size(152, 24);
             loadNVMButton.TabIndex = 6;
             loadNVMButton.Text = "Load";
             loadNVMButton.UseVisualStyleBackColor = true;
@@ -548,6 +553,7 @@
             // smoothSurfaceButton
             // 
             smoothSurfaceButton.AutoSize = true;
+            smoothSurfaceButton.Checked = true;
             smoothSurfaceButton.Dock = DockStyle.Fill;
             smoothSurfaceButton.Location = new Point(3, 3);
             smoothSurfaceButton.Name = "smoothSurfaceButton";
@@ -565,7 +571,6 @@
             NVMSurfaceButton.Name = "NVMSurfaceButton";
             NVMSurfaceButton.Size = new Size(14, 24);
             NVMSurfaceButton.TabIndex = 1;
-            NVMSurfaceButton.TabStop = true;
             NVMSurfaceButton.Text = "radioButton2";
             NVMSurfaceButton.UseVisualStyleBackColor = true;
             // 
@@ -586,7 +591,7 @@
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(3, 476);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(357, 109);
+            groupBox1.Size = new Size(379, 114);
             groupBox1.TabIndex = 3;
             groupBox1.TabStop = false;
             groupBox1.Text = "Lighting";
@@ -605,8 +610,8 @@
             tableLayoutPanel6.Name = "tableLayoutPanel6";
             tableLayoutPanel6.RowCount = 2;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
-            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel6.Size = new Size(351, 87);
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 45F));
+            tableLayoutPanel6.Size = new Size(373, 92);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // label14
@@ -615,7 +620,7 @@
             label14.Dock = DockStyle.Fill;
             label14.Location = new Point(3, 45);
             label14.Name = "label14";
-            label14.Size = new Size(64, 42);
+            label14.Size = new Size(64, 47);
             label14.TabIndex = 21;
             label14.Text = "Move";
             label14.TextAlign = ContentAlignment.MiddleRight;
@@ -636,36 +641,37 @@
             tableLayoutPanel8.ColumnCount = 2;
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 45F));
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel8.Controls.Add(button1, 0, 0);
-            tableLayoutPanel8.Controls.Add(pictureBox2, 0, 0);
+            tableLayoutPanel8.Controls.Add(lightColorButton, 0, 0);
+            tableLayoutPanel8.Controls.Add(lightColorIndicator, 0, 0);
             tableLayoutPanel8.Dock = DockStyle.Fill;
             tableLayoutPanel8.Location = new Point(73, 3);
             tableLayoutPanel8.Name = "tableLayoutPanel8";
             tableLayoutPanel8.RowCount = 1;
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel8.Size = new Size(275, 39);
+            tableLayoutPanel8.Size = new Size(297, 39);
             tableLayoutPanel8.TabIndex = 20;
             // 
-            // button1
+            // lightColorButton
             // 
-            button1.Dock = DockStyle.Fill;
-            button1.Location = new Point(48, 3);
-            button1.Name = "button1";
-            button1.Size = new Size(224, 33);
-            button1.TabIndex = 4;
-            button1.Text = "Pick a color";
-            button1.UseVisualStyleBackColor = true;
+            lightColorButton.Dock = DockStyle.Fill;
+            lightColorButton.Location = new Point(48, 3);
+            lightColorButton.Name = "lightColorButton";
+            lightColorButton.Size = new Size(246, 33);
+            lightColorButton.TabIndex = 4;
+            lightColorButton.Text = "Pick a color";
+            lightColorButton.UseVisualStyleBackColor = true;
+            lightColorButton.Click += lightColorButton_Click;
             // 
-            // pictureBox2
+            // lightColorIndicator
             // 
-            pictureBox2.BackColor = Color.White;
-            pictureBox2.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox2.Dock = DockStyle.Fill;
-            pictureBox2.Location = new Point(3, 3);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(39, 33);
-            pictureBox2.TabIndex = 3;
-            pictureBox2.TabStop = false;
+            lightColorIndicator.BackColor = Color.White;
+            lightColorIndicator.BorderStyle = BorderStyle.FixedSingle;
+            lightColorIndicator.Dock = DockStyle.Fill;
+            lightColorIndicator.Location = new Point(3, 3);
+            lightColorIndicator.Name = "lightColorIndicator";
+            lightColorIndicator.Size = new Size(39, 33);
+            lightColorIndicator.TabIndex = 3;
+            lightColorIndicator.TabStop = false;
             // 
             // tableLayoutPanel9
             // 
@@ -682,7 +688,7 @@
             tableLayoutPanel9.Name = "tableLayoutPanel9";
             tableLayoutPanel9.RowCount = 1;
             tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel9.Size = new Size(275, 36);
+            tableLayoutPanel9.Size = new Size(297, 41);
             tableLayoutPanel9.TabIndex = 22;
             // 
             // lightHeightSlider
@@ -693,10 +699,11 @@
             lightHeightSlider.Maximum = 200;
             lightHeightSlider.Minimum = 20;
             lightHeightSlider.Name = "lightHeightSlider";
-            lightHeightSlider.Size = new Size(179, 33);
+            lightHeightSlider.Size = new Size(201, 38);
             lightHeightSlider.SmallChange = 5;
             lightHeightSlider.TabIndex = 23;
             lightHeightSlider.Value = 20;
+            lightHeightSlider.Scroll += lightHeightSlider_Scroll;
             // 
             // label15
             // 
@@ -704,7 +711,7 @@
             label15.Dock = DockStyle.Fill;
             label15.Location = new Point(23, 0);
             label15.Name = "label15";
-            label15.Size = new Size(64, 36);
+            label15.Size = new Size(64, 41);
             label15.TabIndex = 22;
             label15.Text = "Height";
             label15.TextAlign = ContentAlignment.MiddleRight;
@@ -715,16 +722,20 @@
             lightMoveBox.Dock = DockStyle.Fill;
             lightMoveBox.Location = new Point(3, 3);
             lightMoveBox.Name = "lightMoveBox";
-            lightMoveBox.Size = new Size(14, 30);
+            lightMoveBox.Size = new Size(14, 35);
             lightMoveBox.TabIndex = 0;
             lightMoveBox.Text = "checkBox2";
             lightMoveBox.UseVisualStyleBackColor = true;
+            // 
+            // openFileDialog
+            // 
+            openFileDialog.FileName = "openFileDialog1";
             // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(977, 588);
+            ClientSize = new Size(1143, 596);
             Controls.Add(splitContainer2);
             Name = "MainWindow";
             Text = "Form1";
@@ -742,7 +753,7 @@
             ((System.ComponentModel.ISupportInitialize)betaSlider).EndInit();
             tableLayoutPanel7.ResumeLayout(false);
             tableLayoutPanel7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)meshColorIndicator).EndInit();
             SurfaceBox.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
@@ -750,14 +761,14 @@
             ((System.ComponentModel.ISupportInitialize)ksSlider).EndInit();
             ((System.ComponentModel.ISupportInitialize)kdSlider).EndInit();
             tableLayoutPanel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)colorIndicator).EndInit();
+            ((System.ComponentModel.ISupportInitialize)surfColorIndicator).EndInit();
             tableLayoutPanel5.ResumeLayout(false);
             tableLayoutPanel5.PerformLayout();
             groupBox1.ResumeLayout(false);
             tableLayoutPanel6.ResumeLayout(false);
             tableLayoutPanel6.PerformLayout();
             tableLayoutPanel8.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)lightColorIndicator).EndInit();
             tableLayoutPanel9.ResumeLayout(false);
             tableLayoutPanel9.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)lightHeightSlider).EndInit();
@@ -786,12 +797,12 @@
         private Label label7;
         private TrackBar mSlider;
         private TrackBar ksSlider;
-        private ColorDialog colorDialog1;
+        private ColorDialog colorDialog;
         private TableLayoutPanel tableLayoutPanel4;
-        private Button pickColorButton;
+        private Button surfaceColorButton;
         private Button loadTextureButton;
         private Label label8;
-        private PictureBox colorIndicator;
+        private PictureBox surfColorIndicator;
         private TableLayoutPanel tableLayoutPanel5;
         private RadioButton smoothSurfaceButton;
         private RadioButton NVMSurfaceButton;
@@ -805,15 +816,16 @@
         private CheckBox showMeshBox;
         private Label label12;
         private Button meshColorButton;
-        private PictureBox pictureBox1;
+        private PictureBox meshColorIndicator;
         private Label label13;
         private TableLayoutPanel tableLayoutPanel8;
-        private PictureBox pictureBox2;
-        private Button button1;
+        private PictureBox lightColorIndicator;
+        private Button lightColorButton;
         private Label label14;
         private TableLayoutPanel tableLayoutPanel9;
         private CheckBox lightMoveBox;
         private TrackBar lightHeightSlider;
         private Label label15;
+        private OpenFileDialog openFileDialog;
     }
 }

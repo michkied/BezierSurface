@@ -20,8 +20,15 @@ namespace BezierSurface
         public static float kd = 0.5f;
         public static float ks = 0.5f;
         public static float m = 10;
+        public static int lightHeight = 100;
 
         public static bool drawMesh = false;
+
+        public static Color meshColor = Color.Black;
+        public static Color lightColor = Color.White;
+        public static Color surfaceColor = Color.Red;
+
+        public static Bitmap? texture;
 
         private int precision = 10;
 
@@ -35,12 +42,31 @@ namespace BezierSurface
             kdSlider.Value = (int)(kd * 100);
             ksSlider.Value = (int)(ks * 100);
             mSlider.Value = (int)m;
+            lightHeightSlider.Value = lightHeight;
 
             showMeshBox.Checked = drawMesh;
+            meshColorIndicator.BackColor = meshColor;
+            surfColorIndicator.BackColor = surfaceColor;
+            lightColorIndicator.BackColor = lightColor;
 
             LoadData();
             GenerateVerticies();
-            DrawBitmap();
+
+            Thread renderThread = new(RenderLoop);
+            renderThread.IsBackground = true;
+            renderThread.Start();
+        }
+
+        private void RenderLoop()
+        {
+            while (true)
+            {
+                lock (_mesh)
+                {
+                    DrawBitmap();
+                }
+                Thread.Sleep(1000 / 60);
+            }
         }
 
         private void LoadData()
@@ -64,6 +90,11 @@ namespace BezierSurface
                 new Vector3(40, -120, 0),
                 new Vector3(120, -120, -30)
             };
+
+            for (int i = 0; i < 16; i++)
+            {
+                controlPoints[i] *= 1.8f;
+            }
 
             //controlPoints = new List<Vector3>
             //{
@@ -116,6 +147,8 @@ namespace BezierSurface
             List<Vector3> surfacePoints = new();
             List<Vector3> tangentsU = new();
             List<Vector3> tangentsV = new();
+            List<double> u = new();
+            List<double> v = new();
 
             for (int i = 0; i < precision; i++)
             {
@@ -125,7 +158,8 @@ namespace BezierSurface
                     tempControlPointsX[i + 2 * precision],
                     tempControlPointsX[i + 3 * precision],
                     surfacePoints,
-                    tangentsU
+                    tangentsU,
+                    u
                 );
 
                 GenerateCurve(
@@ -134,25 +168,29 @@ namespace BezierSurface
                     tempControlPointsY[i + 2 * precision],
                     tempControlPointsY[i + 3 * precision],
                     null,
-                    tangentsV
+                    tangentsV,
+                    v
                 );
             }
 
             _vertices.Clear();
             for (int i = 0; i < surfacePoints.Count; i++)
             {
+                int i2 = (i / precision) + (i % precision) * precision;
                 _vertices.Add(
                     new Vertex
                     {
                         P = surfacePoints[i],
                         Pu = tangentsU[i],
-                        Pv = tangentsV[(i / precision) + (i % precision) * precision],
+                        Pv = tangentsV[i2],
                         N = Vector3.Normalize(
                             Vector3.Cross(
                                 tangentsU[i],
-                                tangentsV[(i / precision) + (i % precision) * precision]
+                                tangentsV[i2]
                                 )
                             ),
+                        u = u[i],
+                        v = v[i2]
                     }
                 );
             }
@@ -175,7 +213,7 @@ namespace BezierSurface
             }
         }
 
-        private void GenerateCurve(Vector3 start, Vector3 control1, Vector3 control2, Vector3 end, List<Vector3>? points, List<Vector3>? tangents = null)
+        private void GenerateCurve(Vector3 start, Vector3 control1, Vector3 control2, Vector3 end, List<Vector3>? points, List<Vector3>? tangents = null, List<double>? indexes = null)
         {
             int numOfPoints = precision - 1;
             float d = 1.0f / (float)numOfPoints;
@@ -211,7 +249,9 @@ namespace BezierSurface
                 // u += d
                 points?.Add(nextP0);
                 tangents?.Add(Vector3.Normalize(nextPt0));
+                indexes?.Add(step * d);
             }
+            indexes?.Add(1);
         }
 
         private void RotateVerticies()
@@ -266,6 +306,10 @@ namespace BezierSurface
 
                         for (int k = x1; k <= x2; k++)
                         {
+                            int adjX = k + centerX;
+                            int adjY = i + triangle.yMin + centerY;
+                            if (adjX >= bmp.Width || adjX < 0 || adjY >= bmp.Height || adjY < 0) continue;
+
                             bmp.SetPixel(
                                 k + centerX,
                                 i + triangle.yMin + centerY,
@@ -291,21 +335,12 @@ namespace BezierSurface
                     }
                 }
 
-                if (drawMesh)
-                {
-                    foreach (var e in triangle.edges)
-                    {
-                        g.DrawLine(Pens.Black, e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
-                    }
-                }
+                if (!drawMesh) continue;
 
-                //foreach (var v in triangle.vertices)
-                //{
-                //    g.DrawLine(Pens.Black, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.N_rotated.X * 30, v.P_rotated.Y + centerY + v.N_rotated.Y * 30);
-                //    //g.DrawLine(Pens.Green, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pu_rotated.X * 20, v.P_rotated.Y + centerY + v.Pu_rotated.Y * 20);
-                //    //g.DrawLine(Pens.Blue, v.P_rotated.X + centerX, v.P_rotated.Y + centerY, v.P_rotated.X + centerX + v.Pv_rotated.X * 20, v.P_rotated.Y + centerY + v.Pv_rotated.Y * 20);
-                //    //g.FillEllipse(Brushes.Black, v.P_rotated.X + centerX - 2, v.P_rotated.Y + centerY - 2, 4, 4);
-                //}
+                foreach (var e in triangle.edges)
+                {
+                    g.DrawLine(new Pen(meshColor), e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
+                }
             }
 
             mainPictureBox.Image = bmp;
@@ -314,46 +349,94 @@ namespace BezierSurface
         private void precisionSlider_Scroll(object sender, EventArgs e)
         {
             precision = precisionSlider.Value;
-            GenerateVerticies();
-            DrawBitmap();
+            lock (_mesh)
+            {
+                GenerateVerticies();
+            }
         }
 
         private void alphaSlider_Scroll(object sender, EventArgs e)
         {
             alpha = (double)alphaSlider.Value / 180 * Math.PI;
-            RotateVerticies();
-            DrawBitmap();
+            lock (_mesh)
+            {
+                RotateVerticies();
+            }
         }
 
         private void betaSlider_Scroll(object sender, EventArgs e)
         {
             beta = (double)betaSlider.Value / 180 * Math.PI / 1.5;
-            RotateVerticies();
-            DrawBitmap();
+            lock (_mesh)
+            {
+                RotateVerticies();
+            }
         }
 
         private void kdSlider_Scroll(object sender, EventArgs e)
         {
             kd = (float)kdSlider.Value / 100;
-            DrawBitmap();
         }
 
         private void ksSlider_Scroll(object sender, EventArgs e)
         {
             ks = (float)ksSlider.Value / 100;
-            DrawBitmap();
         }
 
         private void mSlider_Scroll(object sender, EventArgs e)
         {
             m = (float)mSlider.Value;
-            DrawBitmap();
         }
 
         private void showMeshBox_CheckedChanged(object sender, EventArgs e)
         {
             drawMesh = showMeshBox.Checked;
-            DrawBitmap();
+        }
+
+        private void lightHeightSlider_Scroll(object sender, EventArgs e)
+        {
+            lightHeight = lightHeightSlider.Value;
+        }
+
+        private void meshColorButton_Click(object sender, EventArgs e)
+        {
+            colorDialog.Reset();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                meshColorIndicator.BackColor = colorDialog.Color;
+                meshColor = colorDialog.Color;
+            }
+        }
+
+        private void surfaceColorButton_Click(object sender, EventArgs e)
+        {
+            colorDialog.Reset();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                surfColorIndicator.BackColor = colorDialog.Color;
+                surfaceColor = colorDialog.Color;
+                texture = null;
+            }
+        }
+
+        private void lightColorButton_Click(object sender, EventArgs e)
+        {
+            colorDialog.Reset();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                lightColorIndicator.BackColor = colorDialog.Color;
+                lightColor = colorDialog.Color;
+            }
+        }
+
+        private void loadTextureButton_Click(object sender, EventArgs e)
+        {
+            openFileDialog.Reset();
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                texture = new Bitmap(openFileDialog.FileName);
+                surfColorIndicator.BackColor = Color.Transparent;
+            }
         }
     }
 }
