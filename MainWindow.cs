@@ -20,9 +20,11 @@ namespace BezierSurface
         public static float kd = 0.5f;
         public static float ks = 0.5f;
         public static float m = 10;
-        public static int lightHeight = 100;
+
+        public LightSource lightSource = new();
 
         public static bool drawMesh = false;
+        public static int refreshRate = 30;
 
         public static Color meshColor = Color.Black;
         public static Color lightColor = Color.White;
@@ -44,7 +46,7 @@ namespace BezierSurface
             kdSlider.Value = (int)(kd * 100);
             ksSlider.Value = (int)(ks * 100);
             mSlider.Value = (int)m;
-            lightHeightSlider.Value = lightHeight;
+            lightHeightSlider.Value = lightSource.height;
 
             showMeshBox.Checked = drawMesh;
             meshColorIndicator.BackColor = meshColor;
@@ -61,65 +63,56 @@ namespace BezierSurface
 
         private void RenderLoop()
         {
+            int time = 0;
             while (true)
             {
                 lock (_mesh)
                 {
                     DrawBitmap();
                 }
-                Thread.Sleep(1000 / 60);
+                if (lightMoveBox.Checked)
+                    lightSource.Rotate(ref time);
+                Thread.Sleep(1000 / refreshRate);
             }
         }
 
         private void LoadData()
         {
-            controlPoints = new List<Vector3>
+            controlPoints = new List<Vector3>();
+            using (var file = new StreamReader($"../../../resources/shape.txt"))
             {
-                new Vector3(-120, 120, -30),
-                new Vector3(-40, 120, 0),
-                new Vector3(40, 120, 0),
-                new Vector3(120, 120, -30),
-                new Vector3(-120, 40, 0),
-                new Vector3(-40, 40, 0),
-                new Vector3(40, 40, 0),
-                new Vector3(120, 40, 0),
-                new Vector3(-120, -40, 0),
-                new Vector3(-40, -40, 0),
-                new Vector3(40, -40, 0),
-                new Vector3(120, -40, 0),
-                new Vector3(-120, -120, -30),
-                new Vector3(-40, -120, 0),
-                new Vector3(40, -120, 0),
-                new Vector3(120, -120, -30)
-            };
+                string? line = file.ReadLine();
+                for (int i = 0; i < 16; i++)
+                {
+                    if (line == null)
+                    {
+                        MessageBox.Show("Not enough lines in the shape file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Environment.Exit(1);
+                    }
 
-            for (int i = 0; i < 16; i++)
-            {
-                controlPoints[i] *= 1.8f;
+                    var elems = line.Replace(',', '.').Split(' ');
+                    if (elems.Count() != 3)
+                    {
+                        MessageBox.Show($"Line {i + 1} has invalid structure", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Environment.Exit(1);
+                    }
+
+                    try
+                    {
+                        float x = float.Parse(elems[0]);
+                        float y = float.Parse(elems[1]);
+                        float z = float.Parse(elems[2]);
+                        controlPoints.Add(new Vector3(x, y, z));
+                    }
+                    catch (System.FormatException)
+                    {
+                        MessageBox.Show($"Line {i + 1} is not a vlaid set of numbers", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Environment.Exit(1);
+                    }
+
+                    line = file.ReadLine();
+                }
             }
-
-            //controlPoints = new List<Vector3>
-            //{
-            //    new Vector3(-120, 120, 50),
-            //    new Vector3(-40, 120, -20),
-            //    new Vector3(40, 120, 20),
-            //    new Vector3(120, 120, -30),
-
-            //    new Vector3(-120, 40, -10),
-            //    new Vector3(-40, 40, 40),
-            //    new Vector3(40, 40, -80),
-            //    new Vector3(120, 40, 30),
-
-            //    new Vector3(-120, -40, 30),
-            //    new Vector3(-40, -40, -30),
-            //    new Vector3(40, -40, 40),
-            //    new Vector3(120, -40, -10),
-
-            //    new Vector3(-120, -120, -80),
-            //    new Vector3(-40, -120, 30),
-            //    new Vector3(40, -120, -20),
-            //    new Vector3(120, -120, 50)
-            //};
         }
 
         private void GenerateVerticies()
@@ -277,7 +270,7 @@ namespace BezierSurface
             int centerY = bmp.Height / 2;
             Graphics g = Graphics.FromImage(bmp);
 
-            g.Clear(Color.Transparent);
+            g.Clear(Color.LightBlue);
 
             foreach (var triangle in _mesh)
             {
@@ -315,7 +308,7 @@ namespace BezierSurface
                             bmp.SetPixel(
                                 k + centerX,
                                 i + triangle.yMin + centerY,
-                                triangle.GetColor(k, i + triangle.yMin)
+                                triangle.GetColor(k, i + triangle.yMin, lightSource)
                                 );
                         }
                     }
@@ -345,6 +338,7 @@ namespace BezierSurface
                 }
             }
 
+            g.FillEllipse(new SolidBrush(lightColor), lightSource.sourceTransformed.X + centerX - 10, lightSource.sourceTransformed.Y + centerY - 10, 20, 20);
             mainPictureBox.Image = bmp;
         }
 
@@ -397,7 +391,7 @@ namespace BezierSurface
 
         private void lightHeightSlider_Scroll(object sender, EventArgs e)
         {
-            lightHeight = lightHeightSlider.Value;
+            lightSource.height = lightHeightSlider.Value;
         }
 
         private void meshColorButton_Click(object sender, EventArgs e)
@@ -455,6 +449,7 @@ namespace BezierSurface
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 normalMap = new Bitmap(openFileDialog.FileName);
+                NVMSurfaceButton.Enabled = true;
             }
         }
 

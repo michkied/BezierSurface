@@ -63,7 +63,7 @@ namespace BezierSurface
 
         public int yMin => (int)Math.Round(vertices.Min(v => v.P_rotated.Y));
 
-        public Color GetColor(int x, int y)
+        public Color GetColor(int x, int y, LightSource light)
         {
             Vector2 p = new(x,y);
             Vector2 v1 = new(vertices[0].P_rotated.X, vertices[0].P_rotated.Y);
@@ -102,19 +102,15 @@ namespace BezierSurface
                     );
                 Vector3 normalFromMap = new((float)mapColor.R / 127.5f - 1, (float)mapColor.G / 127.5f - 1, (float)mapColor.B / 127.5f - 1);
                 Matrix4x4 rotMatrix = new Matrix4x4(
-                    Pu.X, Pv.X, normal.X, 0,
-                    Pu.Y, Pv.Y, normal.Y, 0,
-                    Pu.Z, Pv.Z, normal.Z, 0,
+                    Pu.X, Pu.Y, Pu.Z, 0,
+                    Pv.X, Pv.Y, Pv.Z, 0,
+                    normal.X, normal.Y, normal.Z, 0,
                     0, 0, 0, 0
                     );
                 normal = Vector3.Normalize(Vector3.Transform(normalFromMap, rotMatrix));
             }
 
-            Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)MainWindow.alpha);
-            Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)MainWindow.beta);
-
-            Vector3 lightSource = Vector3.Transform(Vector3.Transform(new(0, 0, MainWindow.lightHeight), rotMatrixZ), rotMatrixX);
-            Vector3 lightVector = Vector3.Normalize(lightSource - new Vector3(x, y, z));
+            Vector3 lightVector = Vector3.Normalize(light.sourceTransformed - new Vector3(x, y, z));
             Vector3 lightColor = new(MainWindow.lightColor.R, MainWindow.lightColor.G, MainWindow.lightColor.B);
             lightColor /= 255.0f;
 
