@@ -13,6 +13,7 @@ namespace BezierSurface
         private List<Triangle> _mesh = new();
         private List<Vertex> _vertices = new();
         private List<Vector3> _controlPoints = new();
+        private DirectBitmap mainBmp;
 
         public MainWindow()
         {
@@ -30,7 +31,10 @@ namespace BezierSurface
             surfColorIndicator.BackColor = Config.surfaceColor;
             lightColorIndicator.BackColor = Config.lightColor;
 
-            LoadData();
+            mainBmp = new(mainPictureBox.Width, mainPictureBox.Height);
+            Show();
+
+            LoadControlData();
             LoadDefaultTexture();
             GenerateVerticies();
             RotateVerticies();
@@ -56,7 +60,7 @@ namespace BezierSurface
             }
         }
 
-        private void LoadData()
+        private void LoadControlData()
         {
             openFileDialog.Reset();
 
@@ -109,7 +113,7 @@ namespace BezierSurface
         {
             try
             {
-                Config.texture = new Bitmap("..\\..\\..\\resources\\texture.jpg");
+                Config.texture = new DirectBitmap("..\\..\\..\\resources\\texture.jpg");
             }
             catch (Exception)
             {
@@ -224,10 +228,14 @@ namespace BezierSurface
 
         private void DrawBitmap()
         {
-            Bitmap bmp = new(mainPictureBox.Width, mainPictureBox.Height);
-            int centerX = bmp.Width / 2;
-            int centerY = bmp.Height / 2;
-            Graphics g = Graphics.FromImage(bmp);
+            if (mainPictureBox.Width != mainBmp.Width || mainPictureBox.Height != mainBmp.Height)
+            {
+                mainBmp = new DirectBitmap(mainPictureBox.Width, mainPictureBox.Height);
+            }
+
+            int centerX = mainBmp.Width / 2;
+            int centerY = mainBmp.Height / 2;
+            Graphics g = Graphics.FromImage(mainBmp.Bitmap);
 
             g.Clear(Color.LightBlue);
 
@@ -242,7 +250,7 @@ namespace BezierSurface
                     continue;
                 }
 
-                triangle.Fill(bmp, centerX, centerY);
+                triangle.Fill(mainBmp, centerX, centerY);
             }
 
             if (!showMeshBox.Checked)
@@ -251,7 +259,7 @@ namespace BezierSurface
                 g.FillEllipse(new SolidBrush(Config.lightColor), source.X + centerX - 10, source.Y + centerY - 10, 20, 20);
             }
 
-            mainPictureBox.Image = bmp;
+            mainPictureBox.Image = mainBmp.Bitmap;
         }
 
         private void precisionSlider_Scroll(object sender, EventArgs e)
@@ -344,7 +352,7 @@ namespace BezierSurface
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Config.texture = new Bitmap(openFileDialog.FileName);
+                Config.texture = new DirectBitmap(openFileDialog.FileName);
                 surfColorIndicator.BackColor = Color.Transparent;
             }
         }
@@ -359,7 +367,7 @@ namespace BezierSurface
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                Config.normalMap = new Bitmap(openFileDialog.FileName);
+                Config.normalMap = new DirectBitmap(openFileDialog.FileName);
                 NVMSurfaceButton.Enabled = true;
             }
         }

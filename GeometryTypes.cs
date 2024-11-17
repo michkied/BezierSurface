@@ -60,7 +60,7 @@ namespace BezierSurface
 
         public int yMin => (int)Math.Round(vertices.Min(v => v.P_rotated.Y));
 
-        public void Fill(Bitmap bmp, int centerX, int centerY)
+        public void Fill(DirectBitmap bmp, int centerX, int centerY)
         {
             List<Edge>[] ET = GetET();
             List<Edge> AET = new List<Edge>();

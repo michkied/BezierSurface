@@ -23,8 +23,8 @@ namespace BezierSurface
         public static Color lightColor = Color.White;
         public static int lightHeight = 100;
 
-        public static Bitmap? texture;
-        public static Bitmap? normalMap;
+        public static DirectBitmap? texture;
+        public static DirectBitmap? normalMap;
         public static bool useNormalMap = false;
     }
 }
