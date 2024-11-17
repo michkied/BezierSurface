@@ -329,7 +329,6 @@
             showMeshBox.TabIndex = 0;
             showMeshBox.Text = "checkBox1";
             showMeshBox.UseVisualStyleBackColor = true;
-            showMeshBox.CheckedChanged += showMeshBox_CheckedChanged;
             // 
             // label12
             // 
@@ -339,7 +338,7 @@
             label12.Name = "label12";
             label12.Size = new Size(74, 52);
             label12.TabIndex = 1;
-            label12.Text = "Enable";
+            label12.Text = "Show";
             label12.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // SurfaceBox
@@ -776,7 +775,7 @@
             Controls.Add(splitContainer2);
             Margin = new Padding(3, 4, 3, 4);
             Name = "MainWindow";
-            Text = "Form1";
+            Text = "Bezier Surface Visualiser";
             ((System.ComponentModel.ISupportInitialize)mainPictureBox).EndInit();
             splitContainer2.Panel1.ResumeLayout(false);
             splitContainer2.Panel2.ResumeLayout(false);

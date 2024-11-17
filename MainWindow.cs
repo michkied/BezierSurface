@@ -12,49 +12,29 @@ namespace BezierSurface
     {
         private List<Triangle> _mesh = new();
         private List<Vertex> _vertices = new();
-        private List<Vector3> controlPoints = new();
-
-        public static double alpha = 10.0 / 180 * Math.PI;
-        public static double beta = 60.0 / 180 * Math.PI;
-
-        public static float kd = 0.5f;
-        public static float ks = 0.5f;
-        public static float m = 10;
-
-        public LightSource lightSource = new();
-
-        public static bool drawMesh = false;
-        public static int refreshRate = 30;
-
-        public static Color meshColor = Color.Black;
-        public static Color lightColor = Color.White;
-        public static Color surfaceColor = Color.Red;
-
-        public static Bitmap? texture;
-        public static Bitmap? normalMap;
-        public static bool useNormalMap = false;
-
-        private int precision = 10;
+        private List<Vector3> _controlPoints = new();
 
         public MainWindow()
         {
             InitializeComponent();
-            precisionSlider.Value = precision;
-            alphaSlider.Value = (int)(alpha * 180 / Math.PI);
-            betaSlider.Value = (int)(beta * 180 / Math.PI * 1.5);
+            precisionSlider.Value = Config.precision;
+            alphaSlider.Value = (int)(Config.alpha * 180 / Math.PI);
+            betaSlider.Value = (int)(Config.beta * 180 / Math.PI * 1.5);
 
-            kdSlider.Value = (int)(kd * 100);
-            ksSlider.Value = (int)(ks * 100);
-            mSlider.Value = (int)m;
-            lightHeightSlider.Value = lightSource.height;
+            kdSlider.Value = (int)(Config.kd * 100);
+            ksSlider.Value = (int)(Config.ks * 100);
+            mSlider.Value = (int)Config.m;
+            lightHeightSlider.Value = Config.lightHeight;
 
-            showMeshBox.Checked = drawMesh;
-            meshColorIndicator.BackColor = meshColor;
-            surfColorIndicator.BackColor = surfaceColor;
-            lightColorIndicator.BackColor = lightColor;
+            meshColorIndicator.BackColor = Config.meshColor;
+            surfColorIndicator.BackColor = Config.surfaceColor;
+            lightColorIndicator.BackColor = Config.lightColor;
 
             LoadData();
+            LoadDefaultTexture();
             GenerateVerticies();
+            RotateVerticies();
+            GenerateMesh();
 
             Thread renderThread = new(RenderLoop);
             renderThread.IsBackground = true;
@@ -70,16 +50,26 @@ namespace BezierSurface
                 {
                     DrawBitmap();
                 }
-                if (lightMoveBox.Checked)
-                    lightSource.Rotate(ref time);
-                Thread.Sleep(1000 / refreshRate);
+                if (lightMoveBox.Checked && !showMeshBox.Checked)
+                    LightSource.Move(ref time);
+                Thread.Sleep(1000 / Config.refreshRate);
             }
         }
 
         private void LoadData()
         {
-            controlPoints = new List<Vector3>();
-            using (var file = new StreamReader($"../../../resources/shape.txt"))
+            openFileDialog.Reset();
+
+            string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources");
+            openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
+            openFileDialog.Filter = "Text files (*.txt)|*.txt";
+
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            {
+                Environment.Exit(1);
+            }
+
+            using (var file = new StreamReader(openFileDialog.FileName))
             {
                 string? line = file.ReadLine();
                 for (int i = 0; i < 16; i++)
@@ -102,7 +92,7 @@ namespace BezierSurface
                         float x = float.Parse(elems[0]);
                         float y = float.Parse(elems[1]);
                         float z = float.Parse(elems[2]);
-                        controlPoints.Add(new Vector3(x, y, z));
+                        _controlPoints.Add(new Vector3(x, y, z));
                     }
                     catch (System.FormatException)
                     {
@@ -115,6 +105,18 @@ namespace BezierSurface
             }
         }
 
+        private void LoadDefaultTexture()
+        {
+            try
+            {
+                Config.texture = new Bitmap("..\\..\\..\\resources\\texture.jpg");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Failed to load default texture.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         private void GenerateVerticies()
         {
             List<Vector3> tempControlPointsX = new();
@@ -122,19 +124,19 @@ namespace BezierSurface
 
             for (int i = 0; i < 4; i++)
             {
-                GenerateCurve(
-                    controlPoints[i * 4],
-                    controlPoints[i * 4 + 1],
-                    controlPoints[i * 4 + 2],
-                    controlPoints[i * 4 + 3],
+                GeometryHelpers.GenerateCurve(
+                    _controlPoints[i * 4],
+                    _controlPoints[i * 4 + 1],
+                    _controlPoints[i * 4 + 2],
+                    _controlPoints[i * 4 + 3],
                     tempControlPointsX
                 );
 
-                GenerateCurve(
-                    controlPoints[i],
-                    controlPoints[i + 4],
-                    controlPoints[i + 8],
-                    controlPoints[i + 12],
+                GeometryHelpers.GenerateCurve(
+                    _controlPoints[i],
+                    _controlPoints[i + 4],
+                    _controlPoints[i + 8],
+                    _controlPoints[i + 12],
                     tempControlPointsY
                 );
             }
@@ -145,23 +147,23 @@ namespace BezierSurface
             List<double> u = new();
             List<double> v = new();
 
-            for (int i = 0; i < precision; i++)
+            for (int i = 0; i < Config.precision; i++)
             {
-                GenerateCurve(
+                GeometryHelpers.GenerateCurve(
                     tempControlPointsX[i],
-                    tempControlPointsX[i + precision],
-                    tempControlPointsX[i + 2 * precision],
-                    tempControlPointsX[i + 3 * precision],
+                    tempControlPointsX[i + Config.precision],
+                    tempControlPointsX[i + 2 * Config.precision],
+                    tempControlPointsX[i + 3 * Config.precision],
                     surfacePoints,
                     tangentsU,
                     u
                 );
 
-                GenerateCurve(
+                GeometryHelpers.GenerateCurve(
                     tempControlPointsY[i],
-                    tempControlPointsY[i + precision],
-                    tempControlPointsY[i + 2 * precision],
-                    tempControlPointsY[i + 3 * precision],
+                    tempControlPointsY[i + Config.precision],
+                    tempControlPointsY[i + 2 * Config.precision],
+                    tempControlPointsY[i + 3 * Config.precision],
                     null,
                     tangentsV,
                     v
@@ -171,7 +173,7 @@ namespace BezierSurface
             _vertices.Clear();
             for (int i = 0; i < surfacePoints.Count; i++)
             {
-                int i2 = (i / precision) + (i % precision) * precision;
+                int i2 = (i / Config.precision) + (i % Config.precision) * Config.precision;
                 _vertices.Add(
                     new Vertex
                     {
@@ -189,77 +191,34 @@ namespace BezierSurface
                     }
                 );
             }
-
-            RotateVerticies();
-
-            _mesh.Clear();
-            for (int i = 0; i < precision - 1; i++)
-            {
-                for (int j = 0; j < precision - 1; j++)
-                {
-                    int p1 = i * precision + j;
-                    int p2 = i * precision + j + 1;
-                    int p3 = (i + 1) * precision + j;
-                    int p4 = (i + 1) * precision + j + 1;
-
-                    _mesh.Add(new Triangle(_vertices[p1], _vertices[p2], _vertices[p3]));
-                    _mesh.Add(new Triangle(_vertices[p2], _vertices[p4], _vertices[p3]));
-                }
-            }
-        }
-
-        private void GenerateCurve(Vector3 start, Vector3 control1, Vector3 control2, Vector3 end, List<Vector3>? points, List<Vector3>? tangents = null, List<double>? indexes = null)
-        {
-            int numOfPoints = precision - 1;
-            float d = 1.0f / (float)numOfPoints;
-            float d2 = d * d;
-            float d3 = d2 * d;
-
-            Vector3 A0 = start;
-            Vector3 A1 = 3 * (control1 - start);
-            Vector3 A2 = 3 * (control2 - 2 * control1 + start);
-            Vector3 A3 = end - 3 * control2 + 3 * control1 - start;
-
-            Vector3 nextP0 = A0;
-            Vector3 nextP1 = A3 * d3 + A2 * d2 + A1 * d;
-            Vector3 nextP2 = 6 * A3 * d3 + 2 * A2 * d2;
-
-            Vector3 nextPt0 = A1;
-            Vector3 nextPt1 = 3 * A3 * d2 + 2 * A2 * d;
-
-            // u = 0
-            // v = arg
-            points?.Add(nextP0);
-            tangents?.Add(Vector3.Normalize(nextPt0));
-
-            for (int step = 0; step < numOfPoints; step++)
-            {
-                nextP0 += nextP1;
-                nextP1 += nextP2;
-                nextP2 += 6 * A3 * d3;
-
-                nextPt0 += nextPt1;
-                nextPt1 += 6 * A3 * d2;
-
-                // u += d
-                points?.Add(nextP0);
-                tangents?.Add(Vector3.Normalize(nextPt0));
-                indexes?.Add(step * d);
-            }
-            indexes?.Add(1);
         }
 
         private void RotateVerticies()
         {
-            Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)alpha);
-            Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)beta);
+            Matrix4x4 rotMatrixZ = Matrix4x4.CreateRotationZ((float)Config.alpha);
+            Matrix4x4 rotMatrixX = Matrix4x4.CreateRotationX((float)Config.beta);
 
             foreach (var vertex in _vertices)
             {
-                vertex.P_rotated = Vector3.Transform(Vector3.Transform(vertex.P, rotMatrixZ), rotMatrixX);
-                vertex.Pu_rotated = Vector3.Transform(Vector3.Transform(vertex.Pu, rotMatrixZ), rotMatrixX);
-                vertex.Pv_rotated = Vector3.Transform(Vector3.Transform(vertex.Pv, rotMatrixZ), rotMatrixX);
-                vertex.N_rotated = Vector3.Transform(Vector3.Transform(vertex.N, rotMatrixZ), rotMatrixX);
+                vertex.Rotate(rotMatrixZ, rotMatrixX);
+            }
+        }
+
+        public void GenerateMesh()
+        {
+            _mesh.Clear();
+            for (int i = 0; i < Config.precision - 1; i++)
+            {
+                for (int j = 0; j < Config.precision - 1; j++)
+                {
+                    int p1 = i * Config.precision + j;
+                    int p2 = i * Config.precision + j + 1;
+                    int p3 = (i + 1) * Config.precision + j;
+                    int p4 = (i + 1) * Config.precision + j + 1;
+
+                    _mesh.Add(new Triangle(_vertices[p1], _vertices[p2], _vertices[p3]));
+                    _mesh.Add(new Triangle(_vertices[p2], _vertices[p4], _vertices[p3]));
+                }
             }
         }
 
@@ -274,86 +233,41 @@ namespace BezierSurface
 
             foreach (var triangle in _mesh)
             {
-                List<Edge>[] ET = triangle.ET;
-                List<Edge> AET = new List<Edge>();
-
-                foreach (var e in triangle.edges)
+                if (showMeshBox.Checked)
                 {
-                    e.xMin = e.v1.P_rotated.Y < e.v2.P_rotated.Y ? e.v1.P_rotated.X : e.v2.P_rotated.X;
+                    foreach (var e in triangle.edges)
+                    {
+                        g.DrawLine(new Pen(Config.meshColor), e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
+                    }
+                    continue;
                 }
 
-                for (int i = 0; i < triangle.ySize + 1; i++)
-                {
-                    if (ET[i] != null)
-                    {
-                        AET.AddRange(ET[i]);
-                    }
-
-                    AET = AET.OrderBy(e => e.xMin).ToList();
-
-                    if (AET.Count != 0)
-                    {
-                        int x2, x1 = (int)Math.Round(AET[0].xMin);
-                        if (AET.Count > 1)
-                            x2 = (int)Math.Round(AET[1].xMin);
-                        else
-                            x2 = AET[0].xMax;
-
-                        for (int k = x1; k <= x2; k++)
-                        {
-                            int adjX = k + centerX;
-                            int adjY = i + triangle.yMin + centerY;
-                            if (adjX >= bmp.Width || adjX < 0 || adjY >= bmp.Height || adjY < 0) continue;
-
-                            bmp.SetPixel(
-                                k + centerX,
-                                i + triangle.yMin + centerY,
-                                triangle.GetColor(k, i + triangle.yMin, lightSource)
-                                );
-                        }
-                    }
-
-                    List<Edge> toRemove = new();
-                    foreach (var e in AET)
-                    {
-                        if (e.yMax <= i + 1 + triangle.yMin)
-                        {
-                            toRemove.Add(e);
-                            continue;
-                        }
-                        e.xMin += e.slope;
-                    }
-
-                    foreach (var e in toRemove)
-                    {
-                        AET.Remove(e);
-                    }
-                }
-
-                if (!drawMesh) continue;
-
-                foreach (var e in triangle.edges)
-                {
-                    g.DrawLine(new Pen(meshColor), e.v1.P_rotated.X + centerX, e.v1.P_rotated.Y + centerY, e.v2.P_rotated.X + centerX, e.v2.P_rotated.Y + centerY);
-                }
+                triangle.Fill(bmp, centerX, centerY);
             }
 
-            g.FillEllipse(new SolidBrush(lightColor), lightSource.sourceTransformed.X + centerX - 10, lightSource.sourceTransformed.Y + centerY - 10, 20, 20);
+            if (!showMeshBox.Checked)
+            {
+                Vector3 source = GeometryHelpers.Rotate(LightSource.source);
+                g.FillEllipse(new SolidBrush(Config.lightColor), source.X + centerX - 10, source.Y + centerY - 10, 20, 20);
+            }
+
             mainPictureBox.Image = bmp;
         }
 
         private void precisionSlider_Scroll(object sender, EventArgs e)
         {
-            precision = precisionSlider.Value;
+            Config.precision = precisionSlider.Value;
             lock (_mesh)
             {
                 GenerateVerticies();
+                RotateVerticies();
+                GenerateMesh();
             }
         }
 
         private void alphaSlider_Scroll(object sender, EventArgs e)
         {
-            alpha = (double)alphaSlider.Value / 180 * Math.PI;
+            Config.alpha = (float)alphaSlider.Value / 180.0f * (float)Math.PI;
             lock (_mesh)
             {
                 RotateVerticies();
@@ -362,7 +276,7 @@ namespace BezierSurface
 
         private void betaSlider_Scroll(object sender, EventArgs e)
         {
-            beta = (double)betaSlider.Value / 180 * Math.PI / 1.5;
+            Config.beta = (float)betaSlider.Value / 180.0f * (float)Math.PI / 1.5f;
             lock (_mesh)
             {
                 RotateVerticies();
@@ -371,27 +285,22 @@ namespace BezierSurface
 
         private void kdSlider_Scroll(object sender, EventArgs e)
         {
-            kd = (float)kdSlider.Value / 100;
+            Config.kd = (float)kdSlider.Value / 100;
         }
 
         private void ksSlider_Scroll(object sender, EventArgs e)
         {
-            ks = (float)ksSlider.Value / 100;
+            Config.ks = (float)ksSlider.Value / 100;
         }
 
         private void mSlider_Scroll(object sender, EventArgs e)
         {
-            m = (float)mSlider.Value;
-        }
-
-        private void showMeshBox_CheckedChanged(object sender, EventArgs e)
-        {
-            drawMesh = showMeshBox.Checked;
+            Config.m = (float)mSlider.Value;
         }
 
         private void lightHeightSlider_Scroll(object sender, EventArgs e)
         {
-            lightSource.height = lightHeightSlider.Value;
+            Config.lightHeight = lightHeightSlider.Value;
         }
 
         private void meshColorButton_Click(object sender, EventArgs e)
@@ -400,7 +309,7 @@ namespace BezierSurface
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 meshColorIndicator.BackColor = colorDialog.Color;
-                meshColor = colorDialog.Color;
+                Config.meshColor = colorDialog.Color;
             }
         }
 
@@ -410,8 +319,8 @@ namespace BezierSurface
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 surfColorIndicator.BackColor = colorDialog.Color;
-                surfaceColor = colorDialog.Color;
-                texture = null;
+                Config.surfaceColor = colorDialog.Color;
+                Config.texture = null;
             }
         }
 
@@ -421,7 +330,7 @@ namespace BezierSurface
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
                 lightColorIndicator.BackColor = colorDialog.Color;
-                lightColor = colorDialog.Color;
+                Config.lightColor = colorDialog.Color;
             }
         }
 
@@ -431,10 +340,11 @@ namespace BezierSurface
 
             string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources");
             openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
+            openFileDialog.Filter = "Image files (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png";
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                texture = new Bitmap(openFileDialog.FileName);
+                Config.texture = new Bitmap(openFileDialog.FileName);
                 surfColorIndicator.BackColor = Color.Transparent;
             }
         }
@@ -445,17 +355,18 @@ namespace BezierSurface
 
             string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources");
             openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
+            openFileDialog.Filter = "Image files (*.bmp, *.jpg, *.png)|*.bmp;*.jpg;*.png";
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                normalMap = new Bitmap(openFileDialog.FileName);
+                Config.normalMap = new Bitmap(openFileDialog.FileName);
                 NVMSurfaceButton.Enabled = true;
             }
         }
 
         private void NVMSurfaceButton_CheckedChanged(object sender, EventArgs e)
         {
-            useNormalMap = NVMSurfaceButton.Checked;
+            Config.useNormalMap = NVMSurfaceButton.Checked;
         }
     }
 }
