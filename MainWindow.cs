@@ -114,6 +114,7 @@ namespace BezierSurface
             try
             {
                 Config.texture = new DirectBitmap("..\\..\\..\\resources\\texture.jpg");
+                surfColorIndicator.BackColor = Color.Transparent;
             }
             catch (Exception)
             {
