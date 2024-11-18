@@ -47,33 +47,63 @@ namespace BezierSurface
 
         private void RenderLoop()
         {
-            int time = 0;
+            int lightTime = 0;
+            int waveTime = 0;
             while (true)
             {
                 lock (_mesh)
                 {
+                    if (waveCheckBox.Checked) WaveSahpe(ref waveTime);
                     DrawBitmap();
                 }
                 if (lightMoveBox.Checked && !showMeshBox.Checked)
-                    LightSource.Move(ref time);
+                    LightSource.Move(ref lightTime);
                 Thread.Sleep(1000 / Config.refreshRate);
             }
         }
 
+        private void WaveSahpe(ref int time)
+        {
+            int revolutionTicks = 5_000;
+
+            lock (_controlPoints)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    for (int j = 0; j < 4; j++)
+                    {
+                        Vector3 control = _controlPoints[i * 4 + j];
+                        _controlPoints[i * 4 + j] = new Vector3(control.X, control.Y,
+                            control.Z + (float)Math.Sin((float)time / 1000.0f + i + j) * 3
+                            );
+                    }
+                }
+            }
+            GenerateVerticies();
+            RotateVerticies();
+            GenerateMesh();
+
+            time += 1000 / (revolutionTicks / 1000);
+        }
+
         private void LoadControlData()
         {
-            openFileDialog.Reset();
 
-            string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources");
-            openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
-            openFileDialog.Filter = "Text files (*.txt)|*.txt";
+            string CombinedPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\..\\..\\resources\\shape.txt");
 
-            if (openFileDialog.ShowDialog() != DialogResult.OK)
-            {
-                Environment.Exit(1);
-            }
+            // Uncomment this code to display file prompt on startup
 
-            using (var file = new StreamReader(openFileDialog.FileName))
+            //openFileDialog.Reset();
+            //openFileDialog.InitialDirectory = Path.GetFullPath(CombinedPath);
+            //openFileDialog.Filter = "Text files (*.txt)|*.txt";
+
+            //if (openFileDialog.ShowDialog() != DialogResult.OK)
+            //{
+            //    Environment.Exit(1);
+            //}
+
+            //using (var file = new StreamReader(openFileDialog.FileName))
+            using (var file = new StreamReader(CombinedPath))
             {
                 string? line = file.ReadLine();
                 for (int i = 0; i < 16; i++)
@@ -265,9 +295,9 @@ namespace BezierSurface
 
         private void precisionSlider_Scroll(object sender, EventArgs e)
         {
-            Config.precision = precisionSlider.Value;
             lock (_mesh)
             {
+                Config.precision = precisionSlider.Value;
                 GenerateVerticies();
                 RotateVerticies();
                 GenerateMesh();
@@ -376,6 +406,16 @@ namespace BezierSurface
         private void NVMSurfaceButton_CheckedChanged(object sender, EventArgs e)
         {
             Config.useNormalMap = NVMSurfaceButton.Checked;
+        }
+
+        private void lightOmnidirButton_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.lightOmnidir = lightOmnidirButton.Checked;
+        }
+
+        private void mLSlider_Scroll(object sender, EventArgs e)
+        {
+            Config.mL = mLSlider.Value;
         }
     }
 }

@@ -22,6 +22,8 @@ namespace BezierSurface
         public static Color surfaceColor = Color.Red;
         public static Color lightColor = Color.White;
         public static int lightHeight = 100;
+        public static bool lightOmnidir = true;
+        public static int mL = 5;
 
         public static DirectBitmap? texture;
         public static DirectBitmap? normalMap;

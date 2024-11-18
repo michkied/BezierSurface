@@ -157,9 +157,25 @@ namespace BezierSurface
                 normal = Vector3.Normalize(Vector3.Transform(normalFromMap, rotMatrix));
             }
 
-            Vector3 lightVector = Vector3.Normalize(GeometryHelpers.Rotate(LightSource.source) - new Vector3(x, y, z));
+            Vector3 lightPosition = GeometryHelpers.Rotate(LightSource.source);
+            Vector3 lightVector = Vector3.Normalize(lightPosition - new Vector3(x, y, z));
             Vector3 lightColor = new(Config.lightColor.R, Config.lightColor.G, Config.lightColor.B);
             lightColor /= 255.0f;
+
+            if (!Config.lightOmnidir)
+            {
+                lightColor *= (float)Math.Pow(Math.Max(Vector3.Dot(lightVector, Vector3.Normalize(lightPosition)), 0), Config.mL);
+            }
+
+            //Vector3 light0Vector = Vector3.Normalize(GeometryHelpers.Rotate(LightSource.source));
+            //Vector3 lightVector = Vector3.Normalize(light0Vector - new Vector3(x, y, z));
+            //Vector3 lightColor = new(Config.lightColor.R, Config.lightColor.G, Config.lightColor.B);
+            //lightColor /= 255.0f;
+
+            //if (!Config.lightOmnidir)
+            //{
+            //    lightColor *= (float)Math.Pow(Math.Max(Vector3.Dot(lightVector, light0Vector), 0), Config.mL);
+            //}
 
             Vector3 objColor;
             if (Config.texture == null)

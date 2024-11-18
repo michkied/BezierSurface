@@ -33,6 +33,7 @@
             tableLayoutPanel2 = new TableLayoutPanel();
             ShapeBox = new GroupBox();
             tableLayoutPanel1 = new TableLayoutPanel();
+            label16 = new Label();
             label10 = new Label();
             precisionSlider = new TrackBar();
             alphaSlider = new TrackBar();
@@ -45,6 +46,7 @@
             meshColorIndicator = new PictureBox();
             showMeshBox = new CheckBox();
             label12 = new Label();
+            waveCheckBox = new CheckBox();
             SurfaceBox = new GroupBox();
             tableLayoutPanel3 = new TableLayoutPanel();
             label8 = new Label();
@@ -67,6 +69,7 @@
             label9 = new Label();
             groupBox1 = new GroupBox();
             tableLayoutPanel6 = new TableLayoutPanel();
+            label17 = new Label();
             label14 = new Label();
             label13 = new Label();
             tableLayoutPanel8 = new TableLayoutPanel();
@@ -76,6 +79,10 @@
             lightHeightSlider = new TrackBar();
             label15 = new Label();
             lightMoveBox = new CheckBox();
+            tableLayoutPanel10 = new TableLayoutPanel();
+            mLSlider = new TrackBar();
+            lightOmnidirButton = new RadioButton();
+            lightDirButton = new RadioButton();
             colorDialog = new ColorDialog();
             openFileDialog = new OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)mainPictureBox).BeginInit();
@@ -105,6 +112,8 @@
             ((System.ComponentModel.ISupportInitialize)lightColorIndicator).BeginInit();
             tableLayoutPanel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)lightHeightSlider).BeginInit();
+            tableLayoutPanel10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)mLSlider).BeginInit();
             SuspendLayout();
             // 
             // mainPictureBox
@@ -113,7 +122,7 @@
             mainPictureBox.Location = new Point(0, 0);
             mainPictureBox.Margin = new Padding(3, 4, 3, 4);
             mainPictureBox.Name = "mainPictureBox";
-            mainPictureBox.Size = new Size(861, 795);
+            mainPictureBox.Size = new Size(861, 869);
             mainPictureBox.TabIndex = 0;
             mainPictureBox.TabStop = false;
             // 
@@ -131,7 +140,7 @@
             // splitContainer2.Panel2
             // 
             splitContainer2.Panel2.Controls.Add(tableLayoutPanel2);
-            splitContainer2.Size = new Size(1306, 795);
+            splitContainer2.Size = new Size(1306, 869);
             splitContainer2.SplitterDistance = 861;
             splitContainer2.SplitterWidth = 5;
             splitContainer2.TabIndex = 2;
@@ -150,9 +159,9 @@
             tableLayoutPanel2.RowCount = 4;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 267F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 364F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 160F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 226F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(440, 795);
+            tableLayoutPanel2.Size = new Size(440, 869);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // ShapeBox
@@ -174,6 +183,7 @@
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Controls.Add(label16, 0, 4);
             tableLayoutPanel1.Controls.Add(label10, 0, 3);
             tableLayoutPanel1.Controls.Add(precisionSlider, 1, 0);
             tableLayoutPanel1.Controls.Add(alphaSlider, 1, 1);
@@ -182,25 +192,38 @@
             tableLayoutPanel1.Controls.Add(label2, 0, 1);
             tableLayoutPanel1.Controls.Add(label3, 0, 2);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel7, 1, 3);
+            tableLayoutPanel1.Controls.Add(waveCheckBox, 1, 4);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(3, 24);
             tableLayoutPanel1.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 4;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25.0006237F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25.0006275F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25.0006275F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 24.9981289F));
+            tableLayoutPanel1.RowCount = 5;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20.000494F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20.0005016F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 20.0005016F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 19.9985027F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 19.9999981F));
             tableLayoutPanel1.Size = new Size(428, 231);
             tableLayoutPanel1.TabIndex = 5;
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Dock = DockStyle.Fill;
+            label16.Location = new Point(3, 184);
+            label16.Name = "label16";
+            label16.Size = new Size(74, 47);
+            label16.TabIndex = 10;
+            label16.Text = "Wave";
+            label16.TextAlign = ContentAlignment.MiddleRight;
             // 
             // label10
             // 
             label10.AutoSize = true;
             label10.Dock = DockStyle.Fill;
-            label10.Location = new Point(3, 171);
+            label10.Location = new Point(3, 138);
             label10.Name = "label10";
-            label10.Size = new Size(74, 60);
+            label10.Size = new Size(74, 46);
             label10.TabIndex = 8;
             label10.Text = "Mesh";
             label10.TextAlign = ContentAlignment.MiddleRight;
@@ -213,7 +236,7 @@
             precisionSlider.Maximum = 50;
             precisionSlider.Minimum = 3;
             precisionSlider.Name = "precisionSlider";
-            precisionSlider.Size = new Size(342, 53);
+            precisionSlider.Size = new Size(342, 42);
             precisionSlider.TabIndex = 2;
             precisionSlider.Value = 4;
             precisionSlider.Scroll += precisionSlider_Scroll;
@@ -221,23 +244,23 @@
             // alphaSlider
             // 
             alphaSlider.Dock = DockStyle.Fill;
-            alphaSlider.Location = new Point(83, 61);
+            alphaSlider.Location = new Point(83, 50);
             alphaSlider.Margin = new Padding(3, 4, 3, 4);
             alphaSlider.Maximum = 45;
             alphaSlider.Minimum = -45;
             alphaSlider.Name = "alphaSlider";
-            alphaSlider.Size = new Size(342, 49);
+            alphaSlider.Size = new Size(342, 38);
             alphaSlider.TabIndex = 3;
             alphaSlider.Scroll += alphaSlider_Scroll;
             // 
             // betaSlider
             // 
             betaSlider.Dock = DockStyle.Fill;
-            betaSlider.Location = new Point(83, 118);
+            betaSlider.Location = new Point(83, 96);
             betaSlider.Margin = new Padding(3, 4, 3, 4);
             betaSlider.Maximum = 90;
             betaSlider.Name = "betaSlider";
-            betaSlider.Size = new Size(342, 49);
+            betaSlider.Size = new Size(342, 38);
             betaSlider.TabIndex = 4;
             betaSlider.Scroll += betaSlider_Scroll;
             // 
@@ -247,7 +270,7 @@
             label1.Dock = DockStyle.Fill;
             label1.Location = new Point(3, 0);
             label1.Name = "label1";
-            label1.Size = new Size(74, 57);
+            label1.Size = new Size(74, 46);
             label1.TabIndex = 5;
             label1.Text = "Precision";
             label1.TextAlign = ContentAlignment.MiddleRight;
@@ -256,9 +279,9 @@
             // 
             label2.AutoSize = true;
             label2.Dock = DockStyle.Fill;
-            label2.Location = new Point(3, 57);
+            label2.Location = new Point(3, 46);
             label2.Name = "label2";
-            label2.Size = new Size(74, 57);
+            label2.Size = new Size(74, 46);
             label2.TabIndex = 6;
             label2.Text = "Alpha";
             label2.TextAlign = ContentAlignment.MiddleRight;
@@ -267,9 +290,9 @@
             // 
             label3.AutoSize = true;
             label3.Dock = DockStyle.Fill;
-            label3.Location = new Point(3, 114);
+            label3.Location = new Point(3, 92);
             label3.Name = "label3";
-            label3.Size = new Size(74, 57);
+            label3.Size = new Size(74, 46);
             label3.TabIndex = 7;
             label3.Text = "Beta";
             label3.TextAlign = ContentAlignment.MiddleRight;
@@ -286,12 +309,12 @@
             tableLayoutPanel7.Controls.Add(showMeshBox, 0, 0);
             tableLayoutPanel7.Controls.Add(label12, 1, 0);
             tableLayoutPanel7.Dock = DockStyle.Fill;
-            tableLayoutPanel7.Location = new Point(83, 175);
+            tableLayoutPanel7.Location = new Point(83, 142);
             tableLayoutPanel7.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel7.Name = "tableLayoutPanel7";
             tableLayoutPanel7.RowCount = 1;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel7.Size = new Size(342, 52);
+            tableLayoutPanel7.Size = new Size(342, 38);
             tableLayoutPanel7.TabIndex = 9;
             // 
             // meshColorButton
@@ -300,7 +323,7 @@
             meshColorButton.Location = new Point(157, 4);
             meshColorButton.Margin = new Padding(3, 4, 3, 4);
             meshColorButton.Name = "meshColorButton";
-            meshColorButton.Size = new Size(182, 44);
+            meshColorButton.Size = new Size(182, 30);
             meshColorButton.TabIndex = 1;
             meshColorButton.Text = "Pick a color";
             meshColorButton.UseVisualStyleBackColor = true;
@@ -314,7 +337,7 @@
             meshColorIndicator.Location = new Point(106, 4);
             meshColorIndicator.Margin = new Padding(3, 4, 3, 4);
             meshColorIndicator.Name = "meshColorIndicator";
-            meshColorIndicator.Size = new Size(45, 44);
+            meshColorIndicator.Size = new Size(45, 30);
             meshColorIndicator.TabIndex = 3;
             meshColorIndicator.TabStop = false;
             // 
@@ -325,7 +348,7 @@
             showMeshBox.Location = new Point(3, 4);
             showMeshBox.Margin = new Padding(3, 4, 3, 4);
             showMeshBox.Name = "showMeshBox";
-            showMeshBox.Size = new Size(17, 44);
+            showMeshBox.Size = new Size(17, 30);
             showMeshBox.TabIndex = 0;
             showMeshBox.Text = "checkBox1";
             showMeshBox.UseVisualStyleBackColor = true;
@@ -336,10 +359,20 @@
             label12.Dock = DockStyle.Fill;
             label12.Location = new Point(26, 0);
             label12.Name = "label12";
-            label12.Size = new Size(74, 52);
+            label12.Size = new Size(74, 38);
             label12.TabIndex = 1;
             label12.Text = "Show";
             label12.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // waveCheckBox
+            // 
+            waveCheckBox.AutoSize = true;
+            waveCheckBox.Dock = DockStyle.Left;
+            waveCheckBox.Location = new Point(83, 187);
+            waveCheckBox.Name = "waveCheckBox";
+            waveCheckBox.Size = new Size(18, 41);
+            waveCheckBox.TabIndex = 11;
+            waveCheckBox.UseVisualStyleBackColor = true;
             // 
             // SurfaceBox
             // 
@@ -619,7 +652,7 @@
             groupBox1.Margin = new Padding(3, 4, 3, 4);
             groupBox1.Name = "groupBox1";
             groupBox1.Padding = new Padding(3, 4, 3, 4);
-            groupBox1.Size = new Size(434, 152);
+            groupBox1.Size = new Size(434, 218);
             groupBox1.TabIndex = 3;
             groupBox1.TabStop = false;
             groupBox1.Text = "Lighting";
@@ -629,19 +662,34 @@
             tableLayoutPanel6.ColumnCount = 2;
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80F));
             tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel6.Controls.Add(label17, 0, 2);
             tableLayoutPanel6.Controls.Add(label14, 0, 1);
             tableLayoutPanel6.Controls.Add(label13, 0, 0);
             tableLayoutPanel6.Controls.Add(tableLayoutPanel8, 1, 0);
             tableLayoutPanel6.Controls.Add(tableLayoutPanel9, 1, 1);
+            tableLayoutPanel6.Controls.Add(tableLayoutPanel10, 1, 2);
             tableLayoutPanel6.Dock = DockStyle.Fill;
             tableLayoutPanel6.Location = new Point(3, 24);
             tableLayoutPanel6.Margin = new Padding(3, 4, 3, 4);
             tableLayoutPanel6.Name = "tableLayoutPanel6";
-            tableLayoutPanel6.RowCount = 2;
+            tableLayoutPanel6.RowCount = 3;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
-            tableLayoutPanel6.Size = new Size(428, 124);
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel6.Size = new Size(428, 190);
             tableLayoutPanel6.TabIndex = 0;
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Dock = DockStyle.Fill;
+            label17.Location = new Point(3, 120);
+            label17.Name = "label17";
+            label17.Size = new Size(74, 70);
+            label17.TabIndex = 23;
+            label17.Text = "Mode";
+            label17.TextAlign = ContentAlignment.MiddleRight;
             // 
             // label14
             // 
@@ -649,7 +697,7 @@
             label14.Dock = DockStyle.Fill;
             label14.Location = new Point(3, 60);
             label14.Name = "label14";
-            label14.Size = new Size(74, 64);
+            label14.Size = new Size(74, 60);
             label14.TabIndex = 21;
             label14.Text = "Move";
             label14.TextAlign = ContentAlignment.MiddleRight;
@@ -721,7 +769,7 @@
             tableLayoutPanel9.Name = "tableLayoutPanel9";
             tableLayoutPanel9.RowCount = 1;
             tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel9.Size = new Size(342, 56);
+            tableLayoutPanel9.Size = new Size(342, 52);
             tableLayoutPanel9.TabIndex = 22;
             // 
             // lightHeightSlider
@@ -732,7 +780,7 @@
             lightHeightSlider.Maximum = 200;
             lightHeightSlider.Minimum = 20;
             lightHeightSlider.Name = "lightHeightSlider";
-            lightHeightSlider.Size = new Size(233, 52);
+            lightHeightSlider.Size = new Size(233, 48);
             lightHeightSlider.SmallChange = 5;
             lightHeightSlider.TabIndex = 23;
             lightHeightSlider.Value = 20;
@@ -744,7 +792,7 @@
             label15.Dock = DockStyle.Fill;
             label15.Location = new Point(26, 0);
             label15.Name = "label15";
-            label15.Size = new Size(74, 56);
+            label15.Size = new Size(74, 52);
             label15.TabIndex = 22;
             label15.Text = "Height";
             label15.TextAlign = ContentAlignment.MiddleRight;
@@ -758,10 +806,66 @@
             lightMoveBox.Location = new Point(3, 4);
             lightMoveBox.Margin = new Padding(3, 4, 3, 4);
             lightMoveBox.Name = "lightMoveBox";
-            lightMoveBox.Size = new Size(17, 48);
+            lightMoveBox.Size = new Size(17, 44);
             lightMoveBox.TabIndex = 0;
             lightMoveBox.Text = "checkBox2";
             lightMoveBox.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel10
+            // 
+            tableLayoutPanel10.ColumnCount = 2;
+            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 43.2748528F));
+            tableLayoutPanel10.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 56.7251472F));
+            tableLayoutPanel10.Controls.Add(mLSlider, 0, 1);
+            tableLayoutPanel10.Controls.Add(lightOmnidirButton, 0, 0);
+            tableLayoutPanel10.Controls.Add(lightDirButton, 0, 1);
+            tableLayoutPanel10.Dock = DockStyle.Fill;
+            tableLayoutPanel10.Location = new Point(83, 123);
+            tableLayoutPanel10.Name = "tableLayoutPanel10";
+            tableLayoutPanel10.RowCount = 2;
+            tableLayoutPanel10.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel10.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel10.Size = new Size(342, 64);
+            tableLayoutPanel10.TabIndex = 24;
+            // 
+            // mLSlider
+            // 
+            mLSlider.Dock = DockStyle.Fill;
+            mLSlider.Location = new Point(151, 36);
+            mLSlider.Margin = new Padding(3, 4, 3, 0);
+            mLSlider.Maximum = 50;
+            mLSlider.Minimum = 1;
+            mLSlider.Name = "mLSlider";
+            mLSlider.Size = new Size(188, 28);
+            mLSlider.TabIndex = 18;
+            mLSlider.Value = 5;
+            mLSlider.Scroll += mLSlider_Scroll;
+            // 
+            // lightOmnidirButton
+            // 
+            lightOmnidirButton.AutoSize = true;
+            lightOmnidirButton.Checked = true;
+            lightOmnidirButton.Dock = DockStyle.Left;
+            lightOmnidirButton.Location = new Point(3, 3);
+            lightOmnidirButton.Name = "lightOmnidirButton";
+            lightOmnidirButton.Size = new Size(137, 26);
+            lightOmnidirButton.TabIndex = 0;
+            lightOmnidirButton.TabStop = true;
+            lightOmnidirButton.Text = "Omnidirectional";
+            lightOmnidirButton.UseVisualStyleBackColor = true;
+            lightOmnidirButton.CheckedChanged += lightOmnidirButton_CheckedChanged;
+            // 
+            // lightDirButton
+            // 
+            lightDirButton.AutoSize = true;
+            lightDirButton.Dock = DockStyle.Left;
+            lightDirButton.Location = new Point(3, 35);
+            lightDirButton.Name = "lightDirButton";
+            lightDirButton.Size = new Size(103, 26);
+            lightDirButton.TabIndex = 1;
+            lightDirButton.TabStop = true;
+            lightDirButton.Text = "Directional";
+            lightDirButton.UseVisualStyleBackColor = true;
             // 
             // openFileDialog
             // 
@@ -771,7 +875,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1306, 795);
+            ClientSize = new Size(1306, 869);
             Controls.Add(splitContainer2);
             Margin = new Padding(3, 4, 3, 4);
             Name = "MainWindow";
@@ -809,6 +913,9 @@
             tableLayoutPanel9.ResumeLayout(false);
             tableLayoutPanel9.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)lightHeightSlider).EndInit();
+            tableLayoutPanel10.ResumeLayout(false);
+            tableLayoutPanel10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)mLSlider).EndInit();
             ResumeLayout(false);
         }
 
@@ -864,5 +971,12 @@
         private TrackBar lightHeightSlider;
         private Label label15;
         private OpenFileDialog openFileDialog;
+        private Label label16;
+        private CheckBox waveCheckBox;
+        private Label label17;
+        private TableLayoutPanel tableLayoutPanel10;
+        private RadioButton lightOmnidirButton;
+        private RadioButton lightDirButton;
+        private TrackBar mLSlider;
     }
 }
